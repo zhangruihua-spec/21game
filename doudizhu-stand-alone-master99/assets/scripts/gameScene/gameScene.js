@@ -229,7 +229,7 @@ cc.Class({
     this.playerNodeList.forEach(node => {
       node.emit("gamestart_event")
     });
-    ddzData.gameState = ddzConstants.gameState.GAMESTART
+     ddzData.gameState = ddzConstants.gameState.GAMESTART
   },
   //seat_index自己在房间的位置id
   // setPlayerSeatPos(seat_index) {

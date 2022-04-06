@@ -66,26 +66,26 @@ var DataNotify = cc.Class({
   setData(data) {
     this._oldData = this._data;
     this._data = data;
-    this._tryBindArrayFunction()
+    // this._tryBindArrayFunction()
     this.update();
   },
 
-  _tryBindArrayFunction() {
-    if (this._data instanceof Array) {
-      let self = this
-      var arrProto = Object.create(Array.prototype);
-      ['shift', 'unshift', 'push', 'pop', 'splice'].forEach(function (method) {
-        Object.defineProperty(arrProto, method, {
-          value: function () {
-            var result = Array.prototype[method].apply(this, arguments);
-            self.update()
-            return result;
-          }
-        })
-      })
-      this._data.__proto__ = arrProto
-    }
-  },
+  // _tryBindArrayFunction() {
+  //   if (this._data instanceof Array) {
+  //     let self = this
+  //     var arrProto = Object.create(Array.prototype);
+  //     ['shift', 'unshift', 'push', 'pop', 'splice'].forEach(function (method) {
+  //       Object.defineProperty(arrProto, method, {
+  //         value: function () {
+  //           var result = Array.prototype[method].apply(this, arguments);
+  //           self.update()
+  //           return result;
+  //         }
+  //       })
+  //     })
+  //     this._data.__proto__ = arrProto
+  //   }
+  // },
 
   update() {
     this._listeners.forEach(element => {

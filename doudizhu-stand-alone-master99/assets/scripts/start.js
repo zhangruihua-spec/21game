@@ -7,7 +7,7 @@ const gameRule = require('gameRule')
 
 const start = cc.Class({
   extends: cc.Component,
-  __preload() {
+  onLoad() {
     window.myglobal = window.myglobal || myglobal
     window.common = window.common || common
     window.G = window.G || {

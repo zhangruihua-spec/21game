@@ -246,7 +246,7 @@ cc.Class({
   },
   // 通知抢地主消息,显示相应的UI
   canrobNotify(data) {
-    console.log("onCanRobState", data)
+    // console.log("onCanRobState", data)
     //这里需要2个变量条件：自己是下一个抢地主，2发牌动画结束
     // this.rob_player_accountid = data
     if (data === myglobal.playerData.userId) {
