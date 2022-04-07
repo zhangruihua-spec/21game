@@ -102,14 +102,13 @@ cc.Class({
     if (!CC_EDITOR) {
       ddzData.gameStateNotify.addListener(this.gameStateHandler, this)
     }
-    window.$socket.on('canrob_notify', this.canrobNotify, this) // 抢地主
     window.$socket.on('gameEndNotify', this.gameEndNotify, this) // 游戏结束
   },
   onDestroy() {
     if (!CC_EDITOR) {
       ddzData.gameStateNotify.removeListener(this.gameStateHandler, this)
     }
-    window.$socket.remove('canrob_notify', this)
+    // window.$socket.remove('canrob_notify', this)
     window.$socket.remove('gameEndNotify', this)
   },
   //这里初始化房间内位置节点信息(自己和其他玩家)
@@ -159,23 +158,7 @@ cc.Class({
       this.robnoIcon_Sp.active = false
     }
   },
-  // 抢地主通知
-  canrobNotify(landlordId) {
-    if (landlordId === this.userId && landlordId !== myglobal.playerData.userId) {
-      this.robIcon_Sp.active = false
-      this.robnoIcon_Sp.active = false
-      const isQdz = common.random(0, 10) > 5 // 是否抢地主
-      this.schedulerOnce(() => {
-        isQdz && (this.robIcon_Sp.active = true) // 抢
-        !isQdz && (this.robnoIcon_Sp.active = true) // 不抢
-        window.$socket.emit('canrob_state_notify', {
-          userId: this.userId,
-          state: isQdz ? qian_state.qiang : qian_state.buqiang
-        })
-        common.audio.PlayEffect(isQdz ? this.jiaodizhu : this.buqiang)
-      })
-    }
-  },
+
   /**
    * @description 开启一个十秒的闹钟定时器
    * @param {function} fn 关闭后的回调函数
@@ -211,11 +194,11 @@ cc.Class({
     let count = 0;
     card.getChildByName('count').active = true
     const callback = function () {
-      count === 17 && this.unschedule(callback)
+      count === 7 && this.unschedule(callback)
       card.getChildByName('count').getComponent(cc.Label).string = count
       count++;
     }
-    this.schedule(callback, 0.1, 17);
+    this.schedule(callback, 0.1, 7);
   },
   /**
    * @description 出牌后减少手牌节点

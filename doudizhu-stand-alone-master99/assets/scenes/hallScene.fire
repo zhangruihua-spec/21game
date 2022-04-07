@@ -340,7 +340,7 @@
       "array": [
         0,
         0,
-        320.4234619140625,
+        343.81207275390625,
         0,
         0,
         0,
@@ -1534,7 +1534,7 @@
         "__id__": 34
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 36
@@ -3119,7 +3119,7 @@
       "__id__": 21
     },
     "creatroom_prefabs": {
-      "__uuid__": "a7b00965-17b9-415c-b18a-0d4c7673a6f6"
+      "__uuid__": "5968c63f-abd1-44cd-8587-3fc281e8370b"
     },
     "joinroom_prefabs": null,
     "_id": "c036jz1qVAOq6nrqlUakdJ"

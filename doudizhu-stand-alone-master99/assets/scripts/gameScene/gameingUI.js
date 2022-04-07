@@ -2,6 +2,7 @@ import myglobal from "../mygolbal.js"
 const ddzConstants = require('ddzConstants')
 const ddzData = require('ddzData')
 
+
 cc.Class({
   extends: cc.Component,
 
@@ -39,7 +40,9 @@ cc.Class({
     chupaiAudio: {
       type: cc.AudioClip,
       default: null
-    }
+    },
+    outCard_prefab: cc.Prefab,
+
   },
 
   onLoad() {
@@ -60,7 +63,7 @@ cc.Class({
     this.push_card_tmp = []
     // 提示牌型
     this.promptCount = 0
-    this.promptList = []
+    // this.promptList = []
     //监听服务器可以出牌消息
     // myglobal.socket.onCanChuCard(function (data) {
     //   console.log("onCanChuCard" + JSON.stringify(data))
@@ -99,52 +102,52 @@ cc.Class({
     // }.bind(this))
 
     //内部事件:显示底牌事件,data是三张底牌数据
-    this.node.on("show_bottom_card_event", function (data) {
-      console.log("----show_bottom_card_event", data)
-      this.bottom_card_data = data
-      for (var i = 0; i < data.length; i++) {
-        var card = this.bottom_card[i]
-        var show_data = data[i]
-        var call_data = {
-          "obj": card,
-          "data": show_data,
-        }
-        var run = cc.callFunc(function (target, activedata) {
-          var show_card = activedata.obj
-          var show_data = activedata.data
-          show_card.getComponent("card").showCards(show_data)
-        }, this, call_data)
+    // this.node.on("show_bottom_card_event", function (data) {
+    //   console.log("----show_bottom_card_event", data)
+    //   this.bottom_card_data = data
+    //   for (var i = 0; i < data.length; i++) {
+    //     var card = this.bottom_card[i]
+    //     var show_data = data[i]
+    //     var call_data = {
+    //       "obj": card,
+    //       "data": show_data,
+    //     }
+    //     var run = cc.callFunc(function (target, activedata) {
+    //       var show_card = activedata.obj
+    //       var show_data = activedata.data
+    //       show_card.getComponent("card").showCards(show_data)
+    //     }, this, call_data)
 
-        card.runAction(
-          cc.sequence(cc.rotateBy(0, 0, 180),
-            cc.rotateBy(0.2, 0, -90),
-            run,
-            cc.rotateBy(0.2, 0, -90),
-            cc.scaleBy(1, 1.2))
-        )
-      }
-      common.audio.PlayEffect(this.cardsAudio)
-      //this.node.parent.emit("change_room_state_event",defines.gameState.ROOM_PLAYING)
-      //如果自己地主，给加上三张底牌
-      if (myglobal.playerData.userId === myglobal.playerData.masterUserId) {
-        this.scheduleOnce(this.pushThreeCard.bind(this), 0.2)
-      }
+    //     card.runAction(
+    //       cc.sequence(cc.rotateBy(0, 0, 180),
+    //         cc.rotateBy(0.2, 0, -90),
+    //         run,
+    //         cc.rotateBy(0.2, 0, -90),
+    //         cc.scaleBy(1, 1.2))
+    //     )
+    //   }
+    //   common.audio.PlayEffect(this.cardsAudio)
+    //   //this.node.parent.emit("change_room_state_event",defines.gameState.ROOM_PLAYING)
+    //   //如果自己地主，给加上三张底牌
+    //   if (myglobal.playerData.userId === myglobal.playerData.masterUserId) {
+    //     this.scheduleOnce(this.pushThreeCard.bind(this), 0.2)
+    //   }
 
 
-    }.bind(this))
+    // }.bind(this))
 
     //注册监听一个选择牌消息 
-    // this.node.on("choose_card_event", function (cardData) {
-    //   this.choose_card_data.push(cardData)
-    // }.bind(this))
+    this.node.on("choose_card_event", function (cardData) {
+      this.choose_card_data.push(cardData)
+    }.bind(this))
 
-    // this.node.on("unchoose_card_event", function (cardId) {
-    //   for (let i = 0; i < this.choose_card_data.length; i++) {
-    //     if (this.choose_card_data[i].index === cardId) {
-    //       this.choose_card_data.splice(i, 1)
-    //     }
-    //   }
-    // }.bind(this))
+    this.node.on("unchoose_card_event", function (cardId) {
+      for (let i = 0; i < this.choose_card_data.length; i++) {
+        if (this.choose_card_data[i].index === cardId) {
+          this.choose_card_data.splice(i, 1)
+        }
+      }
+    }.bind(this))
   },
   start() {
     // 监听游戏状态
@@ -154,7 +157,6 @@ cc.Class({
     window.$socket.on('_chooseCard', this._chooseCardNotify, this) // 选牌
     window.$socket.on('_unchooseCard', this._unchooseCardNotify, this) // 取消选牌
     window.$socket.on('pushcard_notify', this.pushCardNotify, this) // 发牌
-    window.$socket.on('canrob_notify', this.canrobNotify, this) // 抢地主
     window.$socket.on('selfPlayAHandNotify', this.selfPlayAHandNotify, this) // 出牌
     window.$socket.on('rootPlayAHandNotify', this.rootPlayAHandNotify, this) // 机器出牌
     window.$socket.on('gameEndNotify', this.gameEndNotify, this) // 游戏结束
@@ -166,7 +168,7 @@ cc.Class({
     window.$socket.remove('_chooseCard', this)
     window.$socket.remove('_unchooseCard', this)
     window.$socket.remove('pushcard_notify', this)
-    window.$socket.remove('canrob_notify', this)
+    // window.$socket.remove('canrob_notify', this)
     window.$socket.remove('selfPlayAHandNotify', this)
     window.$socket.remove('rootPlayAHandNotify', this)
     window.$socket.remove('gameEndNotify', this)
@@ -244,16 +246,7 @@ cc.Class({
     this.cur_index_card--
     this.scheduleOnce(this._runactive_pushcard.bind(this), 0.3)
   },
-  // 通知抢地主消息,显示相应的UI
-  canrobNotify(data) {
-    // console.log("onCanRobState", data)
-    //这里需要2个变量条件：自己是下一个抢地主，2发牌动画结束
-    // this.rob_player_accountid = data
-    if (data === myglobal.playerData.userId) {
-      this.robUI.active = true
-      this.customSchedulerOnce()
-    }
-  },
+
   //开启一个定时器
   customSchedulerOnce() {
     this.count = 10;
@@ -276,10 +269,10 @@ cc.Class({
   /**
    * @description 出牌
    */
-  selfPlayAHandNotify(promptList) {
-    console.log('玩家出牌提示', promptList)
+  selfPlayAHandNotify() {
+    console.log('玩家出牌提示')
     this.promptCount = 0
-    this.promptList = promptList
+    // this.promptList = promptList
     // 先清理出牌区域
     this.clearOutZone(myglobal.playerData.userId)
     // 显示可以出牌的UI
@@ -303,7 +296,7 @@ cc.Class({
     const playerNode = gameScene_script.getUserNodeByAccount(userId)
     if (!playerNode) return
     playerNode.schedulerOnce(() => {
-      this.appendOtherCardsToOutZone(outCard_node, node_cards, 0)
+      this.appendOtherCardsToOutZone(outCard_node, cards[0], 0)
       playerNode.subtractCards(cards.length)
       // 通知服务，下一家出牌
       window.$socket.emit('nextPlayerNotify', userId)
@@ -371,7 +364,7 @@ cc.Class({
     }
     //创建card预制体
     this.cards_node = []
-    for (var i = 0; i < 17; i++) {
+    for (var i = 0; i < 7; i++) {
 
       var card = cc.instantiate(this.card_prefab)
       card.scale = 0.8
@@ -388,25 +381,25 @@ cc.Class({
       this.card_width = card.width
     }
     //创建3张底牌
-    this.bottom_card = []
-    for (var i = 0; i < 3; i++) {
-      var di_card = cc.instantiate(this.card_prefab)
-      di_card.scale = 0.4
-      // di_card.position = this.bottom_card_pos_node.position
-      //三张牌，中间坐标就是bottom_card_pos_node节点坐标，
-      //0,和2两张牌左右移动windth*0.4
-      if (i == 0) {
-        di_card.x = di_card.x - di_card.width * 0.5
-      } else if (i == 2) {
-        di_card.x = di_card.x + di_card.width * 0.5
-      }
-      //di_card.x = di_card.width-i*di_card.width-20
-      //di_card.y=60
-      // di_card.parent = this.node.parent
-      di_card.parent = this.bottom_card_pos_node
-      //存储在容器里
-      this.bottom_card.push(di_card)
-    }
+    // this.bottom_card = []
+    // for (var i = 0; i < 3; i++) {
+    //   var di_card = cc.instantiate(this.card_prefab)
+    //   di_card.scale = 0.4
+    //   // di_card.position = this.bottom_card_pos_node.position
+    //   //三张牌，中间坐标就是bottom_card_pos_node节点坐标，
+    //   //0,和2两张牌左右移动windth*0.4
+    //   if (i == 0) {
+    //     di_card.x = di_card.x - di_card.width * 0.5
+    //   } else if (i == 2) {
+    //     di_card.x = di_card.x + di_card.width * 0.5
+    //   }
+    //   //di_card.x = di_card.width-i*di_card.width-20
+    //   //di_card.y=60
+    //   // di_card.parent = this.node.parent
+    //   di_card.parent = this.bottom_card_pos_node
+    //   //存储在容器里
+    //   this.bottom_card.push(di_card)
+    // }
   },
   //给玩家发送三张底牌后，过1s,把牌设置到y=-250位置效果
   schedulePushThreeCard() {
@@ -443,6 +436,7 @@ cc.Class({
 
   destoryCard(userId, choose_card) {
     if (!choose_card.length) return
+    if (choose_card.length > 1) return
     /*出牌逻辑
       1. 将选中的牌 从父节点中移除
       2. 从this.cards_node 数组中，删除 选中的牌 
@@ -466,7 +460,7 @@ cc.Class({
         }
       }
     }
-    this.appendCardsToOutZone(userId, destroy_card)
+    this.appendCardsToOutZone(userId, choose_card[0].index)
     this.updateCards()
   },
 
@@ -510,28 +504,41 @@ cc.Class({
    * @param {List} cards 牌型节点集合
    * @param {Number} yoffset 移动距离
    */
-  appendOtherCardsToOutZone(outCard_node, cards, yoffset) {
-    if (!cards.length) {
-      const index = common.random(0, 3)
-      common.audio.PlayEffect(this.buyaoAudio[index])
-      return
-    }
+  appendOtherCardsToOutZone(outCard_node, carddata, yoffset) {
+    // if (!cards.length) {
+    //   const index = common.random(0, 3)
+    //   common.audio.PlayEffect(this.buyaoAudio[index])
+    //   return
+    // }
     common.audio.PlayEffect(this.chupaiAudio)
     //添加新的子节点
-    for (var i = 0; i < cards.length; i++) {
-      var card = cards[i];
-      outCard_node.addChild(card, 100 + i) //第二个参数是 zorder,保证牌不能被遮住
-    }
+    // for (var i = 0; i < cards.length; i++) {
+    //   var card = cards[i];S
+    //   outCard_node.addChild(card, 100 + i) //第二个参数是 zorder,保证牌不能被遮住
+    // }
+    //添加到出牌堆里面
+    var outcardnode = cc.instantiate(this.outCard_prefab);
+    outcardnode.getComponent('gameOutCardUI').updateData(carddata);
+    outcardnode.parent = this.node;
+    // var i = 1;
+    // var outcardnode = cc.instantiate(this.outCard_prefab);
+    // outcardnode.parent = this.node;
+    // outcardnode.addChild(cards[0], 100+i);
+    // i++;
+    
+    
+
     //对出牌进行排序
     //设置出牌节点的坐标
-    var zPoint = cards.length / 2;
-    for (var i = 0; i < cards.length; i++) {
-      var cardNode = outCard_node.getChildren()[i]
-      var x = (i - zPoint) * 30;
-      var y = cardNode.y + yoffset; //因为每个节点需要的Y不一样，做参数传入
-      cardNode.setScale(0.5, 0.5);
-      cardNode.setPosition(x, y);
-    }
+    // var zPoint = cards.length / 2;
+    // for (var i = 0; i < cards.length; i++) {
+    //   var cardNode = outCard_node.getChildren()[i]
+    //   var x = (i - zPoint) * 30;
+    //   var y = cardNode.y + yoffset; //因为每个节点需要的Y不一样，做参数传入
+    //   cardNode.setScale(0.5, 0.5);
+    //   cardNode.setPosition(x, y);
+    //   cc.log('chuanrude xy ',x,y)
+    // }
   },
   //将 “选中的牌” 添加到出牌区域
   //destroy_card是玩家本次出的牌
@@ -573,24 +580,8 @@ cc.Class({
   // update (dt) {},
   onButtonClick(event, customData) {
     switch (customData) {
-      case "btn_qiandz": // 不抢
-        // myglobal.socket.requestRobState(qian_state.qiang)
-        window.$socket.emit('canrob_state_notify', {
-          userId: myglobal.playerData.userId,
-          state: qian_state.qiang,
-        })
-        this.robUI.active = false
-        common.audio.PlayEffect(this.jiaodizhuAudio)
-        break
-      case "btn_buqiandz": // 抢地主
-        // myglobal.socket.requestRobState(qian_state.buqiang)
-        window.$socket.emit('canrob_state_notify', {
-          userId: myglobal.playerData.userId,
-          state: qian_state.buqiang,
-        })
-        this.robUI.active = false
-        common.audio.PlayEffect(this.buqiangAudio)
-        break
+    
+     
       case "nopushcard":  // 不出牌
         // myglobal.socket.request_buchu_card([], null)
         window.$socket.emit('nextPlayerNotify', myglobal.playerData.userId)
@@ -653,28 +644,8 @@ cc.Class({
         //   }
         // }.bind(this))
         break
-      case "tipcard": // 提示
-        // 已选牌归位
-        this.choose_card_data = []
-        this.cards_node.map(node => node.emit("reset_card_flag"))
-        // 根据提示牌型显示
-        if (this.promptList.length) {
-          const index = this.promptCount % this.promptList.length
-          const promptCards = this.promptList[index]
-          const cardsNode = this.cards_node
-          for (let i = 0; i < promptCards.length; i++) {
-            const card = promptCards[i];
-            for (let j = 0; j < cardsNode.length; j++) {
-              const cardJs = cardsNode[j].getComponent("card");
-              const cardData = cardJs.card_data
-              if (cardData.val === card.val && cardData.shape === card.shape) {
-                cardJs.node.emit(cc.Node.EventType.TOUCH_START)
-              }
-            }
-          }
-        }
-        this.promptCount++
-        break
+     
+       
       default:
         break
     }

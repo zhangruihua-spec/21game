@@ -16,7 +16,8 @@ cc.Class({
     btn_ready: cc.Node, // 准备按钮
     //绑定玩家座位,下面有3个子节点
     players_seat_pos: cc.Node,
-    gameUiNode: cc.Node
+    gameUiNode: cc.Node,
+    outCardNode: cc.Node
   },
   onLoad() {
     ddzData.gameState = ddzConstants.gameState.WAITREADY
@@ -41,6 +42,7 @@ cc.Class({
     this.addPlayerNode(myglobal.playerData)
     this.addPlayerNode(myglobal.playerData.rootList[0])
     this.addPlayerNode(myglobal.playerData.rootList[1])
+    this.addPlayerNode(myglobal.playerData.rootList[2])
     //监听，给其他玩家发牌(内部事件)
     this.node.on("pushcard_other_event", function () {
       console.log('其他玩家发牌')

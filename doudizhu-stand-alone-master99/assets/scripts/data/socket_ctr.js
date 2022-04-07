@@ -126,12 +126,12 @@ const socketCtr = function(){
          }
     }
 
-    //监听服务器通知开始抢地主消息
-    that.onCanRobState = function(callback){
-        if(callback){
-            $socket.on("canrob_notify",callback)
-         }
-    }
+    // //监听服务器通知开始抢地主消息
+    // that.onCanRobState = function(callback){
+    //     if(callback){
+    //         $socket.on("canrob_notify",callback)
+    //      }
+    // }
 
     //监听服务器:通知谁抢地主操作消息
     that.onRobState = function(callback){
