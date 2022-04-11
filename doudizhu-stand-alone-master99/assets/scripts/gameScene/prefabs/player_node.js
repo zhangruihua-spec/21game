@@ -164,12 +164,12 @@ cc.Class({
    * @param {function} fn 关闭后的回调函数
    * @param {Number} seconds 几秒后关闭
    */
-  schedulerOnce(fn, seconds = common.random(0, 10)) {
-    this.count = 10;
+  schedulerOnce(fn, seconds = common.random(0, 5)) {
+    this.count = 5;
     this.time_label.string = this.count
     this.qiangdidzhu_node.active = true
     const callback = function () {
-      if (!this.count || (10 - seconds) === this.count) {
+      if (!this.count || (5 - seconds) === this.count) {
         // 在第六次执行回调时取消这个计时器
         this.qiangdidzhu_node.active = false
         this.unschedule(callback)

@@ -150,6 +150,7 @@ cc.Class({
     }.bind(this))
   },
   start() {
+    var self = this;
     // 监听游戏状态
     if (!CC_EDITOR) {
       ddzData.gameStateNotify.addListener(this.gameStateHandler, this)
@@ -159,7 +160,16 @@ cc.Class({
     window.$socket.on('pushcard_notify', this.pushCardNotify, this) // 发牌
     window.$socket.on('selfPlayAHandNotify', this.selfPlayAHandNotify, this) // 出牌
     window.$socket.on('rootPlayAHandNotify', this.rootPlayAHandNotify, this) // 机器出牌
+
+    window.$socket.on('selfGetAHandNotify', this.selfGetAHandNotify, this) // 摸牌
+    window.$socket.on('rootGetAHandNotify', this.rootGetAHandNotify, this) // 机器摸牌
+    
     window.$socket.on('gameEndNotify', this.gameEndNotify, this) // 游戏结束
+    //添加一个出牌队列
+    self.outcardnode = cc.instantiate(this.outCard_prefab);
+    self.outcardnode.getComponent('gameOutCardUI').initdata();
+    self.outcardnode.parent = this.node;
+   
   },
   onDestroy() {
     if (!CC_EDITOR) {
@@ -171,6 +181,10 @@ cc.Class({
     // window.$socket.remove('canrob_notify', this)
     window.$socket.remove('selfPlayAHandNotify', this)
     window.$socket.remove('rootPlayAHandNotify', this)
+
+    window.$socket.remove('selfGetAHandNotify', this)
+    window.$socket.remove('rootGetAHandNotify', this)
+
     window.$socket.remove('gameEndNotify', this)
   },
   _chooseCardNotify(cardData) {
@@ -271,28 +285,54 @@ cc.Class({
    */
   selfPlayAHandNotify() {
     console.log('玩家出牌提示')
+   
     this.promptCount = 0
     // this.promptList = promptList
     // 先清理出牌区域
-    this.clearOutZone(myglobal.playerData.userId)
+    // this.clearOutZone(myglobal.playerData.userId)
     // 显示可以出牌的UI
-    this.playingUI_node.active = true
+    this.playingUI_node.active = true;//展示出牌按钮
+    this.playingUI_node.getChildByName('btn_chupai').active = true;
+    this.playingUI_node.getChildByName('btn_tisji').active = false;
+    //通知下一个玩家摸牌
   },
+
+  /**
+   * @description 自己摸牌
+   */
+   selfGetAHandNotify() {
+    // this.promptList = promptList
+    // 先清理出牌区域
+    // 显示可以出牌的UI
+    this.playingUI_node.active = true;//展示摸牌按钮
+    this.playingUI_node.getChildByName('btn_tisji').active = true;
+    this.playingUI_node.getChildByName('btn_chupai').active = false;
+  },
+
+   /**
+   * @description 机器人摸牌
+   */
+    rootGetAHandNotify({ userId, cards }) {
+      //牌面上的数字加一
+      playerNode.subtractCards(cards.length)
+    },
+  
+
   // 机器出牌
   rootPlayAHandNotify({ userId, cards }) {
     var gameScene_script = this.node.parent.getComponent("gameScene")
     //获取出牌区域节点
     var outCard_node = gameScene_script.getUserOutCardPosByAccount(userId)
-    if (!outCard_node) return
-    outCard_node.removeAllChildren(true);
+    // if (!outCard_node) return
+    // outCard_node.removeAllChildren(true);
 
-    var node_cards = []
-    for (var i = 0; i < cards.length; i++) {
-      var card = cc.instantiate(this.card_prefab)
-      card.getComponent("card").showCards(cards[i], userId)
-      node_cards.push(card)
-    }
-    const delay = common.random(0, 10)
+    // var node_cards = []
+    // for (var i = 0; i < cards.length; i++) {
+    //   var card = cc.instantiate(this.card_prefab)
+    //   card.getComponent("card").showCards(cards[i], userId)
+    //   node_cards.push(card)
+    // }
+    const delay = common.random(0, 5)//随机时间
     const playerNode = gameScene_script.getUserNodeByAccount(userId)
     if (!playerNode) return
     playerNode.schedulerOnce(() => {
@@ -304,6 +344,7 @@ cc.Class({
   },
   // 游戏结束
   gameEndNotify({ isWin, otherPlayerCards }) {
+    var self = this;
     console.log('游戏结束', { isWin, otherPlayerCards })
     if (isWin) {
       this.winNode.active = true
@@ -311,6 +352,8 @@ cc.Class({
       this.loseNode.active = true
     }
     ddzData.gameState = ddzConstants.gameState.WAITREADY
+    self.outcardnode.getComponent('gameOutCardUI').resetData();
+
   },
   //对牌排序
   sortCard() {
@@ -425,13 +468,31 @@ cc.Class({
       card.y = -230  //先把底盘放在-230，在设置个定时器下移到-250的位置
 
       //console.log("pushThreeCard x:"+card.x)
-      card.getComponent("card").showCards(this.bottom_card_data[i], myglobal.playerData.userId)
+      card.getComponent("card").showCards(this.bottom_card_data[0], myglobal.playerData.userId)
       card.active = true
       this.cards_node.push(card)
     }
     this.sortCard()
     //设置一个定时器，在2s后，修改y坐标为-250
     this.scheduleOnce(this.schedulePushThreeCard.bind(this), 2)
+  },
+  //自己手牌添加一张牌
+  pushOneCard(carddata){
+    var card = cc.instantiate(this.card_prefab)
+    card.scale = 0.8
+    // card.parent = this.node.parent
+    card.parent = this.cardsNode
+    var last_card_x = this.cards_node[this.cards_node.length - 1].x
+
+    card.x = last_card_x + ((0 + 1) * this.card_width * 0.4)
+    card.y = -250  //先把底盘放在-230，在设置个定时器下移到-250的位置
+
+    //console.log("pushThreeCard x:"+card.x)
+    card.getComponent("card").showCards(carddata, myglobal.playerData.userId)
+    card.active = true
+    this.cards_node.push(card)
+    //提示出牌
+    window.$socket.emit('nextPlayerNotify', myglobal.playerData.userId)
   },
 
   destoryCard(userId, choose_card) {
@@ -460,7 +521,7 @@ cc.Class({
         }
       }
     }
-    this.appendCardsToOutZone(userId, choose_card[0].index)
+    this.appendCardsToOutZone(userId, choose_card[0])
     this.updateCards()
   },
 
@@ -505,6 +566,7 @@ cc.Class({
    * @param {Number} yoffset 移动距离
    */
   appendOtherCardsToOutZone(outCard_node, carddata, yoffset) {
+    var self = this;
     // if (!cards.length) {
     //   const index = common.random(0, 3)
     //   common.audio.PlayEffect(this.buyaoAudio[index])
@@ -517,9 +579,7 @@ cc.Class({
     //   outCard_node.addChild(card, 100 + i) //第二个参数是 zorder,保证牌不能被遮住
     // }
     //添加到出牌堆里面
-    var outcardnode = cc.instantiate(this.outCard_prefab);
-    outcardnode.getComponent('gameOutCardUI').updateData(carddata);
-    outcardnode.parent = this.node;
+    self.outcardnode.getComponent('gameOutCardUI').updateData(carddata);
     // var i = 1;
     // var outcardnode = cc.instantiate(this.outCard_prefab);
     // outcardnode.parent = this.node;
@@ -543,9 +603,9 @@ cc.Class({
   //将 “选中的牌” 添加到出牌区域
   //destroy_card是玩家本次出的牌
   appendCardsToOutZone(userId, destroy_card) {
-    if (!destroy_card.length) return
+    //if (!destroy_card.length) return
     //先给本次出的牌做一个排序
-    this.pushCardSort(destroy_card)
+    // this.pushCardSort(destroy_card)
     var gameScene_script = this.node.parent.getComponent("gameScene")
     //获取出牌区域节点
     var outCard_node = gameScene_script.getUserOutCardPosByAccount(userId)
@@ -580,8 +640,6 @@ cc.Class({
   // update (dt) {},
   onButtonClick(event, customData) {
     switch (customData) {
-    
-     
       case "nopushcard":  // 不出牌
         // myglobal.socket.request_buchu_card([], null)
         window.$socket.emit('nextPlayerNotify', myglobal.playerData.userId)
@@ -591,6 +649,25 @@ cc.Class({
         this.cards_node.map(node => node.emit("reset_card_flag"))
         this.playingUI_node.active = false
         break
+      case "getcard"://摸一张牌上来
+          window.$socket.emit('getCardNotify', {
+            userId: myglobal.playerData.userId,
+          }, ({carddata}) => {
+            if (carddata) {
+              // this.destoryCard(myglobal.playerData.userId, this.choose_card_data)
+              this.playingUI_node.active = false;
+              //显示当前牌
+              this.pushOneCard(carddata);
+            } else {
+              //出牌失败，把选择的牌归位
+              // this.cards_node.map(node => node.emit("reset_card_flag"))
+              // for (let i = 0; i < this.cards_node.length; i++) {
+              //   this.cards_node[i].emit("reset_card_flag")
+              // }
+            }
+            // this.choose_card_data = []
+          })
+          break
       case "pushcard":   // 出牌
         //先获取本次出牌数据
         if (this.choose_card_data.length == 0) {
@@ -605,7 +682,7 @@ cc.Class({
         }, ({state}) => {
           if (state === 1) {
             this.destoryCard(myglobal.playerData.userId, this.choose_card_data)
-            this.playingUI_node.active = false
+            this.playingUI_node.active = false;
           } else {
             //出牌失败，把选择的牌归位
             this.cards_node.map(node => node.emit("reset_card_flag"))

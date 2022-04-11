@@ -18,8 +18,10 @@ const AICardType = (val, cardList) => ({val, cardList})
  * @param  {boolean} isWinnerIsLandlord 当前最大是否是地主
  * @return {number} winnerCardCount 当前最大那家剩余手牌数
  */
-AILogic.prototype.follow = function (winc, isWinnerIsLandlord, winnerCardCount) {
+AILogic.prototype.follow = function (winc, winnerCardCount) {
   var self = this;
+
+  console.log('cards--',self.cards);
 
   var c = self.cards.slice(0, 1);
            
@@ -77,9 +79,9 @@ AILogic.prototype.follow = function (winc, isWinnerIsLandlord, winnerCardCount) 
  */
 AILogic.prototype.play = function (landlordCardsCnt) {
     var self = this;
-    console.log('sdfsdf',length(self.cards))
+   
     var idx = common.random(0,length(self.cards));
-    console.log('sdfsdfdd',idx)
+ 
     var minCard = self.cards[idx];
     
     return minCard;

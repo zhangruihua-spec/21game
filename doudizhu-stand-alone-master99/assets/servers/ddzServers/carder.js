@@ -91,14 +91,13 @@ function carder() {
     //洗牌
     shuffleCard()
   }
-  //把牌分成三份和三张带翻的牌
-  //每份牌17张
+  //每份牌7张
   that.splitThreeCards = function () {
     //创建牌
     creatleCard()
     var threeCards = {}
     for (var i = 0; i < 7; i++) {
-      for (var j = 0; j < 3; j++) {
+      for (var j = 0; j < 4; j++) {
         if (threeCards.hasOwnProperty(j)) {
           threeCards[j].push(that.card_list.pop());
         } else {
@@ -107,7 +106,7 @@ function carder() {
       }
     }
 
-    return [threeCards[0], threeCards[1], threeCards[2], that.card_list]
+    return [threeCards[0], threeCards[1], threeCards[2], threeCards[3],that.card_list]
   }
 
   //出一张牌

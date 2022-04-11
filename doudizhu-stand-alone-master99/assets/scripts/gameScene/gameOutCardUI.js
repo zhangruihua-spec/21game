@@ -13,6 +13,8 @@ cc.Class({
 
     properties: {
         card_prefab: cc.Prefab,
+        outcardNode:cc.Node,
+        bgNode:cc.Node
        
     },
    
@@ -22,11 +24,10 @@ cc.Class({
        
     },
 
-    ctor() {
-      
+    initdata() {
+       
         this.outcardsData = [];
-      
-      },
+    },
 
     start () {
 
@@ -34,29 +35,32 @@ cc.Class({
     updateData(data){
         let self = this;
        
-        this.outcardsData.push(data);
+        self.outcardsData.push(data);
         //先把牌出具push到牌数据中
     
-
+        self.outcardNode.removeAllChildren();
         //创建牌节点，添加上去
-        this.cards_node = []
+        self.cards_node = []
         for (var i = 0; i < self.outcardsData.length; i++) {
+            var card = cc.instantiate(this.card_prefab)
+            card.scale = 1;
+            // card.parent = this.node.parent
+            card.parent = this.outcardNode;
+            //   card.x = card.width * 0.4 * (-0.5) * (-16) + card.width * 0.4 * 0;
+            //这里实现为，每发一张牌，放在已经发的牌最后，然后整体移动
+            //   card.y = -250
+            //   card.active = false
 
-        var card = cc.instantiate(this.card_prefab)
-        card.scale = 0.8;
-        // card.parent = this.node.parent
-        card.parent = this.node;
-        //   card.x = card.width * 0.4 * (-0.5) * (-16) + card.width * 0.4 * 0;
-        //这里实现为，每发一张牌，放在已经发的牌最后，然后整体移动
-        //   card.y = -250
-        //   card.active = false
+            card.getComponent("card").showCards(self.outcardsData[i])
+            //存储牌的信息,用于后面发牌效果
+            //   this.cards_node.push(card)
+            //   this.card_width = card.width
+            }
+        },
 
-        card.getComponent("card").showCards(self.outcardsData[i])
-        //存储牌的信息,用于后面发牌效果
-        //   this.cards_node.push(card)
-        //   this.card_width = card.width
-        }
-        }
-
-    // update (dt) {},
+        resetData () {
+            if (this.outcardNode) {
+                this.outcardNode.removeAllChildren();
+            }
+        },
 });

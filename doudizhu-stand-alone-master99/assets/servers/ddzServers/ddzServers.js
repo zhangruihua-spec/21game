@@ -10,6 +10,7 @@ const ddzServers = {
   landlordNum: 0, // 抢地主次数
   robplayer: [], // 复制一份房间内player,做抢地主操作
   landlordId: '', // 当前地主id
+  handCardOther: [], // 发完手牌之后剩余的牌
   /*
     * 当前桌面牌信息
     *  roundWinId 本轮当前赢牌的玩家userId
@@ -21,8 +22,9 @@ const ddzServers = {
     if (!CC_EDITOR) {
       ddzData.gameStateNotify.addListener(this.gameStateHandler, this)
       // $socket.on('canrob_state_notify', this.canrobStateNotify, this) // 抢地主消息
+      $socket.on('getCardNotify', this.getCardNotify, this) // 摸牌消息
       $socket.on('playAHandNotify', this.playAHandNotify, this) // 出牌消息
-      $socket.on('nextPlayerNotify', this.nextPlayerNotify, this) // 出牌消息
+      $socket.on('nextPlayerNotify', this.nextPlayerNotify, this) 
     }
   },
   gameStateHandler(value) {
@@ -41,7 +43,12 @@ const ddzServers = {
         break
       case states.PUSHCARD: // 发牌
         window.$socket.emit('pushcard_notify', this.playersData[mygolbal.playerData.userId].cardList)
-        setTimeout(() => { this.setGameState(states.PLAYING) }, 0)
+        setTimeout(() => { this.setGameState(states.GETCARD) }, 0)
+        break
+      case states.GETCARD: // 摸牌阶段
+        //随机通知一个摸牌
+        this.landlordId = parseInt(this.playersData.players[0]);
+        this.getCard(this.playersData[this.landlordId])
         break
       case states.PLAYING: // 出牌阶段
         this.landlordId = parseInt(this.playersData.players[0])//随机一个开始出牌
@@ -74,6 +81,9 @@ const ddzServers = {
     const leftPlayerId = rootList[1].userId
     const thirdPlayerId = rootList[2].userId
     const cardList = carder.splitThreeCards() // 生成新牌
+    const handcardList = cardList[4] // 剩余桌上的牌
+    this.handCardOther = handcardList;
+    console.log('sssc',this.handCardOther);
     console.log('新牌', cardList)
     const playersData = {
       players: [userId, rightPlayerId, leftPlayerId,, thirdPlayerId], // 当前房间玩家id集合
@@ -90,7 +100,7 @@ const ddzServers = {
         userId: rightPlayerId,
         cardList: cardList[1],
       },
-      // 左边机器人
+      // 右上机器人
       [leftPlayerId]: {
         isLandlord: false,
         userId: leftPlayerId,
@@ -112,41 +122,79 @@ const ddzServers = {
     return playersData
   },
  
-  // 下一位玩家出牌
+  // 当前玩家出牌
   nextPlayerNotify(userId) {
-    this.playCard(this.playersData[userId].nextPlayer)
+    this.setGameState(ddzConstants.gameState.PLAYING)
+    this.playCard(this.playersData[userId])
   },
+   // 下一位玩家出牌
+   nextPlayerNotifypro(userId) {
+    this.setGameState(ddzConstants.gameState.PLAYING)
+    this.playCard(this.playersData[userId])
+  },
+  // 下一位玩家摸牌
+  nextPlayegetCard(userId) {
+    this.setGameState(ddzConstants.gameState.GETCARD)
+    this.getCard(this.playersData[userId].nextPlayer)
+  },
+
+  //通知摸牌
+  getCard(player) {
+    console.log('摸牌', player)
+    const ai = new AILogic(player)
+    if (player.userId === mygolbal.playerData.userId) {
+      //自己摸牌
+        window.$socket.emit('selfGetAHandNotify');
+    } else {
+      // 机器摸牌
+      let restNum = self.handCardOther.length;
+      self.handCardOther[restNum - 1]
+      window.$socket.emit('rootGetAHandNotify', {
+        userId: player.userId,
+        cards:self.handCardOther[restNum - 1]
+      })
+      self.handCardOther.pop();
+      
+    }
+  },
+
   // 发布出牌通知
   playCard(player) {
-    console.log('出牌', player)
+    console.log('出牌-----', player)
     const isOver = this.roundWinId && !this.playersData[this.roundWinId].cardList.length
     if (isOver) {
       // 游戏结束
       this.setGameState(ddzConstants.gameState.GAMEEND)
       return
     }
+    
     const ai = new AILogic(player)
     if (player.userId === mygolbal.playerData.userId) {
       // 准备要提示的牌
       // const winc = this.roundWinId && this.roundWinId !== player.userId ? this.winCards : null
       // console.log(winc ? '玩家跟牌' : '玩家出牌')
       // const promptList = ai.prompt(winc);
-      // 自己出牌
-      window.$socket.emit('selfPlayAHandNotify')
+      // 自己先摸一张牌，再丢一张牌到牌堆
+      window.$socket.emit('selfPlayAHandNotify');
     } else {
+      
       // 机器出牌
       let result = null
-      if (!this.roundWinId || this.roundWinId === player.userId) {
-        // 如果本轮出牌赢牌是自己：出牌
-        result = ai.play(this.playersData[this.landlordId].cardList.length)
-        console.log(player.userId, 'AI出牌', result)
-      } else {
-        // 跟牌，根据上一轮赢家的牌型、是不是地主、还剩几张牌
-        const playerData = this.playersData[this.roundWinId]
-        const isLandlord = playerData.userId === this.landlordId
-        result = ai.follow(this.winCards, isLandlord, playerData.cardList.length);
-        console.log(player.userId, 'AI跟牌', result)
-      }
+      // if (!this.roundWinId || this.roundWinId === player.userId) {
+      //   // 如果本轮出牌赢牌是自己：出牌
+      //   result = ai.play(this.playersData[this.landlordId].cardList.length)
+      //   console.log(player.userId, 'AI出牌', result)
+      // } else {
+      //   // 跟牌，根据上一轮赢家的牌型、是不是地主、还剩几张牌
+      //   const playerData = this.playersData[this.roundWinId]
+      //   const isLandlord = playerData.userId === this.landlordId
+      //   result = ai.follow(this.winCards, isLandlord, playerData.cardList.length);
+      //   console.log(player.userId, 'AI跟牌', result)
+      // }
+      console.log('roundWinId',this.roundWinId);
+      const playerData = this.playersData[this.roundWinId]
+      result = ai.follow(this.winCards, playerData.cardList.length);
+
       window.$socket.emit('rootPlayAHandNotify', {
         userId: player.userId,
         cards: result ? result.cardList : []
@@ -167,12 +215,39 @@ const ddzServers = {
           }
         }
   
-        this.roundWinId = player.userId
+        this.roundWinId = player.userId // 当前出牌玩家id
         delete result.cardList;
         this.winCards = result
         // window.playUI.reDraw();
       }
     }
+  },
+  // 玩家抓取一张牌
+  getCardNotify({ userId }, callback) {
+
+    // 增加一张的手牌
+    let self = this;
+    let restNum = self.handCardOther.length;
+    let handData = self.handCardOther[restNum - 1]
+    self.playersData[userId].cardList.push(handData);
+    self.handCardOther.pop();    
+
+    callback && callback({
+      carddata: handData
+    });
+
+    //刷新下手牌显示
+
+
+    // for (let i = 0; i < cards.length; i++) {
+    //   for (let j = 0; j < selfCards.length; j++) {
+    //     cards[i].val === selfCards[j].val && cards[i].shape === selfCards[j].shape && selfCards.splice(j, 1)
+    //   }
+    // }
+    // this.nextPlayerNotify(userId)
+
+
+    //提示出牌
   },
   // 玩家自己出牌消息
   playAHandNotify({ userId, cards }, callback) {
@@ -199,7 +274,10 @@ const ddzServers = {
         cards[i].val === selfCards[j].val && cards[i].shape === selfCards[j].shape && selfCards.splice(j, 1)
       }
     }
-    this.nextPlayerNotify(userId)
+    //
+    this.nextPlayerNotifypro(userId)
+   
+    
   },
   /**
   * @description 判断玩家选中的牌是否是正确牌型，出牌需要符合规则，跟牌需要牌型可以大过上家
