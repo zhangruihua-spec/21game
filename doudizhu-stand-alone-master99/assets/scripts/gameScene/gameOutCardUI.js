@@ -55,12 +55,21 @@ cc.Class({
             //存储牌的信息,用于后面发牌效果
             //   this.cards_node.push(card)
             //   this.card_width = card.width
-            }
-        },
+        }
+        //做下适配
+        // if (self.outcardsData.length > 5) {
+        //     let buttonsLayout = self.outcardNode.getComponent(cc.Layout);
+        //     buttonsLayout.SpacingX = -25;
+        //     buttonsLayout.updateLayout();
+        // }
+       
 
-        resetData () {
-            if (this.outcardNode) {
-                this.outcardNode.removeAllChildren();
-            }
-        },
+    },
+
+    resetData () {
+        if (this.outcardNode) {
+            this.outcardNode.removeAllChildren();
+        }
+    },
+    
 });

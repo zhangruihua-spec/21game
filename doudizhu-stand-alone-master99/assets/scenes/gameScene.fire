@@ -425,8 +425,8 @@
       "__type__": "TypedArray",
       "ctor": "Float32Array",
       "array": [
-        536,
-        284,
+        -576,
+        307,
         0,
         0,
         0,
@@ -527,9 +527,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "3513bc76-77a4-4586-9291-10a15f33dcae"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 0,
     "_fillType": 0,
@@ -560,7 +558,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "7f71625e-bc0b-4edc-8509-42dbdc3e1859"
+      "__uuid__": "a6ee0c3c-28e2-4c33-862a-9b6f4078b25e"
     },
     "_type": 0,
     "_sizeMode": 0,
@@ -586,16 +584,16 @@
     "_enabled": true,
     "alignMode": 1,
     "_target": null,
-    "_alignFlags": 33,
-    "_left": 0,
-    "_right": 0.05,
-    "_top": 0.05,
+    "_alignFlags": 9,
+    "_left": 24,
+    "_right": 0.9050640583038332,
+    "_top": 13,
     "_bottom": 0,
     "_verticalCenter": 0,
     "_horizontalCenter": 0,
     "_isAbsLeft": true,
     "_isAbsRight": false,
-    "_isAbsTop": false,
+    "_isAbsTop": true,
     "_isAbsBottom": true,
     "_isAbsHorizontalCenter": true,
     "_isAbsVerticalCenter": true,
@@ -722,7 +720,7 @@
       "array": [
         0,
         0,
-        271.9319763183594,
+        317.8313293457031,
         0,
         0,
         0,
@@ -798,7 +796,7 @@
         "__id__": 22
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 24
@@ -1047,7 +1045,7 @@
       "__id__": 17
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 23
@@ -1311,8 +1309,8 @@
       "__type__": "TypedArray",
       "ctor": "Float32Array",
       "array": [
-        -539,
-        -218.0399932861328,
+        -558,
+        -75,
         0,
         0,
         0,
@@ -1369,7 +1367,7 @@
       "__type__": "TypedArray",
       "ctor": "Float32Array",
       "array": [
-        539,
+        535.9359741210938,
         58.040000915527344,
         0,
         0,
@@ -1431,8 +1429,8 @@
       "__type__": "TypedArray",
       "ctor": "Float32Array",
       "array": [
-        473.56298828125,
-        -182.7729949951172,
+        563,
+        -75,
         0,
         0,
         0,
@@ -1551,128 +1549,8 @@
       "__type__": "TypedArray",
       "ctor": "Float32Array",
       "array": [
-        455.2860107421875,
-        198.4029998779297,
-        0,
-        0,
-        0,
-        0,
-        1,
-        1,
-        1,
-        1
-      ]
-    },
-    "_eulerAngles": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_skewX": 0,
-    "_skewY": 0,
-    "_is3DNode": false,
-    "_groupIndex": 0,
-    "groupIndex": 0,
-    "_id": "capgrPe1BBh7MFt7GcUBLl"
-  },
-  {
-    "__type__": "cc.Node",
-    "_name": "cardsoutzone",
-    "_objFlags": 0,
-    "_parent": {
-      "__id__": 31
-    },
-    "_children": [],
-    "_active": true,
-    "_components": [],
-    "_prefab": null,
-    "_opacity": 255,
-    "_color": {
-      "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
-      "a": 255
-    },
-    "_contentSize": {
-      "__type__": "cc.Size",
-      "width": 0,
-      "height": 0
-    },
-    "_anchorPoint": {
-      "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
-    },
-    "_trs": {
-      "__type__": "TypedArray",
-      "ctor": "Float32Array",
-      "array": [
-        -270.09600830078125,
-        -41.56100082397461,
-        0,
-        0,
-        0,
-        0,
-        1,
-        1,
-        1,
-        1
-      ]
-    },
-    "_eulerAngles": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_skewX": 0,
-    "_skewY": 0,
-    "_is3DNode": false,
-    "_groupIndex": 0,
-    "groupIndex": 0,
-    "_id": "03OTrXB8VNk6d/QGn//TPr"
-  },
-  {
-    "__type__": "cc.Node",
-    "_name": "seat_node_4",
-    "_objFlags": 0,
-    "_parent": {
-      "__id__": 26
-    },
-    "_children": [
-      {
-        "__id__": 34
-      }
-    ],
-    "_active": true,
-    "_components": [],
-    "_prefab": null,
-    "_opacity": 255,
-    "_color": {
-      "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
-      "a": 255
-    },
-    "_contentSize": {
-      "__type__": "cc.Size",
-      "width": 0,
-      "height": 0
-    },
-    "_anchorPoint": {
-      "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
-    },
-    "_trs": {
-      "__type__": "TypedArray",
-      "ctor": "Float32Array",
-      "array": [
-        -516.8150024414062,
-        162.1009979248047,
+        556,
+        184,
         0,
         0,
         0,
@@ -1701,7 +1579,7 @@
     "_name": "cardsoutzone",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 33
+      "__id__": 31
     },
     "_children": [],
     "_active": true,
@@ -1753,6 +1631,126 @@
     "_groupIndex": 0,
     "groupIndex": 0,
     "_id": "2cAZ9FgutKRr8VeEUpaF7K"
+  },
+  {
+    "__type__": "cc.Node",
+    "_name": "seat_node_4",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 26
+    },
+    "_children": [
+      {
+        "__id__": 34
+      }
+    ],
+    "_active": true,
+    "_components": [],
+    "_prefab": null,
+    "_opacity": 255,
+    "_color": {
+      "__type__": "cc.Color",
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 255
+    },
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 0,
+      "height": 0
+    },
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 0.5,
+      "y": 0.5
+    },
+    "_trs": {
+      "__type__": "TypedArray",
+      "ctor": "Float32Array",
+      "array": [
+        -559,
+        184,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "_eulerAngles": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_skewX": 0,
+    "_skewY": 0,
+    "_is3DNode": false,
+    "_groupIndex": 0,
+    "groupIndex": 0,
+    "_id": "capgrPe1BBh7MFt7GcUBLl"
+  },
+  {
+    "__type__": "cc.Node",
+    "_name": "cardsoutzone",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 33
+    },
+    "_children": [],
+    "_active": true,
+    "_components": [],
+    "_prefab": null,
+    "_opacity": 255,
+    "_color": {
+      "__type__": "cc.Color",
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 255
+    },
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 0,
+      "height": 0
+    },
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 0.5,
+      "y": 0.5
+    },
+    "_trs": {
+      "__type__": "TypedArray",
+      "ctor": "Float32Array",
+      "array": [
+        -270.09600830078125,
+        -41.56100082397461,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "_eulerAngles": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_skewX": 0,
+    "_skewY": 0,
+    "_is3DNode": false,
+    "_groupIndex": 0,
+    "groupIndex": 0,
+    "_id": "03OTrXB8VNk6d/QGn//TPr"
   },
   {
     "__type__": "cc.Node",

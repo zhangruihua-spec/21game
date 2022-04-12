@@ -23,6 +23,7 @@ const ddzServers = {
       ddzData.gameStateNotify.addListener(this.gameStateHandler, this)
       // $socket.on('canrob_state_notify', this.canrobStateNotify, this) // 抢地主消息
       $socket.on('getCardNotify', this.getCardNotify, this) // 摸牌消息
+      $socket.on('rootgetCardNotify', this.nextPlayegetCard, this) // 摸牌消息
       $socket.on('playAHandNotify', this.playAHandNotify, this) // 出牌消息
       $socket.on('nextPlayerNotify', this.nextPlayerNotify, this) 
     }
@@ -135,16 +136,24 @@ const ddzServers = {
   // 下一位玩家摸牌
   nextPlayegetCard(userId) {
     this.setGameState(ddzConstants.gameState.GETCARD)
-    this.getCard(this.playersData[userId].nextPlayer)
+    //机器人摸牌
+    this.getCard(this.playersData[userId].nextPlayer);
+    //机器人出牌
+    if (this.playersData[userId].nextPlayer.userId != mygolbal.playerData.userId) {
+      this.playCard(this.playersData[userId].nextPlayer);
+    }
+    
   },
 
   //通知摸牌
   getCard(player) {
-    console.log('摸牌', player)
+    let self = this;
+    console.log('摸牌', player);
     const ai = new AILogic(player)
     if (player.userId === mygolbal.playerData.userId) {
       //自己摸牌
         window.$socket.emit('selfGetAHandNotify');
+        console.log('剩余桌面牌', self.handCardOther.length);
     } else {
       // 机器摸牌
       let restNum = self.handCardOther.length;
@@ -154,6 +163,7 @@ const ddzServers = {
         cards:self.handCardOther[restNum - 1]
       })
       self.handCardOther.pop();
+      console.log('剩余桌面牌', self.handCardOther.length);
       
     }
   },
@@ -191,8 +201,8 @@ const ddzServers = {
       //   result = ai.follow(this.winCards, isLandlord, playerData.cardList.length);
       //   console.log(player.userId, 'AI跟牌', result)
       // }
-      console.log('roundWinId',this.roundWinId);
-      const playerData = this.playersData[this.roundWinId]
+      // console.log('roundWinId',this.roundWinId);
+      const playerData = this.playersData[player.userId]
       result = ai.follow(this.winCards, playerData.cardList.length);
 
       window.$socket.emit('rootPlayAHandNotify', {
@@ -274,10 +284,8 @@ const ddzServers = {
         cards[i].val === selfCards[j].val && cards[i].shape === selfCards[j].shape && selfCards.splice(j, 1)
       }
     }
-    //
-    this.nextPlayerNotifypro(userId)
-   
-    
+    //其他玩家发牌
+    this.nextPlayegetCard(userId);
   },
   /**
   * @description 判断玩家选中的牌是否是正确牌型，出牌需要符合规则，跟牌需要牌型可以大过上家

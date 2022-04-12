@@ -3,7 +3,7 @@ cc.Class({
   extends: cc.Component,
 
   properties: {
-
+    chooseRole_prefabs: cc.Prefab,
   },
 
   // LIFE-CYCLE CALLBACKS:
@@ -25,8 +25,14 @@ cc.Class({
     myglobal.playerData.rate = rate
     myglobal.playerData.roomId = roomId
     cc.sys.localStorage.setItem('userData', JSON.stringify(myglobal.playerData))
-    cc.director.loadScene("gameScene")
-    this.node.destroy()
+    // cc.director.loadScene("gameScene")
+    // this.node.destroy()
+    //先进入选择角色
+
+    var choose_Role = cc.instantiate(this.chooseRole_prefabs)
+    choose_Role.parent = this.node
+    choose_Role.zIndex = 100
+
   }
 
 });

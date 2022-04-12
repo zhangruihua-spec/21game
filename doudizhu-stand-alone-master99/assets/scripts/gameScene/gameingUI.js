@@ -313,8 +313,11 @@ cc.Class({
    * @description 机器人摸牌
    */
     rootGetAHandNotify({ userId, cards }) {
+      var gameScene_script = this.node.parent.getComponent("gameScene")
+      const playerNode = gameScene_script.getUserNodeByAccount(userId)
+      this.playingUI_node.active = false;
       //牌面上的数字加一
-      playerNode.subtractCards(cards.length)
+      playerNode.subtractCards(-1);
     },
   
 
@@ -339,7 +342,7 @@ cc.Class({
       this.appendOtherCardsToOutZone(outCard_node, cards[0], 0)
       playerNode.subtractCards(cards.length)
       // 通知服务，下一家出牌
-      window.$socket.emit('nextPlayerNotify', userId)
+      window.$socket.emit('rootgetCardNotify', userId)
     }, delay)
   },
   // 游戏结束

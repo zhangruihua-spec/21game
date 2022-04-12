@@ -123,21 +123,22 @@ cc.Class({
     this.cardlist_node = []
     this.seat_index = index
     //这里根据传入的avarter来获取本地图像
-    var head_image_path = "UI/headimage/" + data.avatarUrl
-    cc.loader.loadRes(head_image_path, cc.SpriteFrame, function (err, spriteFrame) {
-      if (err) {
-        console.log(err.message || err);
-        return;
-      }
-      this.headImage.spriteFrame = spriteFrame;
-    }.bind(this));
+    // var head_image_path = "UI/headimage/" + data.avatarUrl
+    // cc.loader.loadRes(head_image_path, cc.SpriteFrame, function (err, spriteFrame) {
+    //   if (err) {
+    //     console.log(err.message || err);
+    //     return;
+    //   }
+    //   // this.headImage.spriteFrame = spriteFrame;
+    // }.bind(this));
     if (!index) {
       this.readyimage.active = false
       return
     }
     // 更改右边机器人的扑克牌位置
-    if (index === 1) {
+    if (index === 1|| index ==2) {
       this.card_node.x = -this.card_node.x
+      this.readyimage.x = -this.readyimage.x;
     }
   },
   gameStateHandler(state) {
