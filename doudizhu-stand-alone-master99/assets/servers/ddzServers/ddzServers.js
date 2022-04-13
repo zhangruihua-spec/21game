@@ -187,7 +187,6 @@ const ddzServers = {
       // 自己先摸一张牌，再丢一张牌到牌堆
       window.$socket.emit('selfPlayAHandNotify');
     } else {
-      
       // 机器出牌
       let result = null
       // if (!this.roundWinId || this.roundWinId === player.userId) {

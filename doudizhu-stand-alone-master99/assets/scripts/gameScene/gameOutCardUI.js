@@ -25,7 +25,6 @@ cc.Class({
     },
 
     initdata() {
-       
         this.outcardsData = [];
     },
 
@@ -34,36 +33,44 @@ cc.Class({
     },
     updateData(data){
         let self = this;
-       
         self.outcardsData.push(data);
         //先把牌出具push到牌数据中
-    
         self.outcardNode.removeAllChildren();
         //创建牌节点，添加上去
         self.cards_node = []
         for (var i = 0; i < self.outcardsData.length; i++) {
             var card = cc.instantiate(this.card_prefab)
             card.scale = 1;
-            // card.parent = this.node.parent
             card.parent = this.outcardNode;
-            //   card.x = card.width * 0.4 * (-0.5) * (-16) + card.width * 0.4 * 0;
-            //这里实现为，每发一张牌，放在已经发的牌最后，然后整体移动
-            //   card.y = -250
-            //   card.active = false
-
             card.getComponent("card").showCards(self.outcardsData[i])
-            //存储牌的信息,用于后面发牌效果
-            //   this.cards_node.push(card)
-            //   this.card_width = card.width
         }
-        //做下适配
-        // if (self.outcardsData.length > 5) {
-        //     let buttonsLayout = self.outcardNode.getComponent(cc.Layout);
-        //     buttonsLayout.SpacingX = -25;
-        //     buttonsLayout.updateLayout();
-        // }
-       
+        //计算当前牌的总分数
+        let socreAll = 0;
+        for (var i = 0; i < self.outcardsData.length; i++) {
+            let cardScore = self.outcardsData[i].val;
+            //A==1点  2==2点   
+            if (cardScore > 13) {
+                cardScore = cardScore - 13;
+            }
+            socreAll = socreAll + cardScore;
+        }
+        //更新桌面分数
+        $socket.emit('_refreshDeskScore', socreAll);
 
+
+    },
+    update(){
+        let self =this;
+        const maxcardNum = 12;
+        let lay = self.outcardNode.getComponent(cc.Layout)
+        if (self.outcardsData.length > 12) {
+            let  cardw = 128;
+            let  outcardNum = self.outcardsData.length;
+            let newSPx = (cardw * (outcardNum - maxcardNum )) / (outcardNum - 1 );
+           
+            self.outcardNode.getComponent(cc.Layout).spacingX = - (newSPx-2);
+        }
+        self.outcardNode.getComponent(cc.Layout).updateLayout();
     },
 
     resetData () {
