@@ -31,9 +31,11 @@ cc.Class({
     start () {
 
     },
-    updateData(data){
+    updateData(data = null){
         let self = this;
-        self.outcardsData.push(data);
+        if (data) {
+            self.outcardsData.push(data);
+        }
         //先把牌出具push到牌数据中
         self.outcardNode.removeAllChildren();
         //创建牌节点，添加上去
@@ -56,8 +58,6 @@ cc.Class({
         }
         //更新桌面分数
         $socket.emit('_refreshDeskScore', socreAll);
-
-
     },
     update(){
         let self =this;
@@ -74,9 +74,46 @@ cc.Class({
     },
 
     resetData () {
+        let self = this;
+        self.outcardsData = [];
         if (this.outcardNode) {
             this.outcardNode.removeAllChildren();
         }
     },
+    //加上一张牌之后计算 得分
+    calcDeskScore(){
+        let self = this;
+        //从最后两张牌开始算
+        let outlength =  self.outcardsData.length;
+
+        function calcScore(data){
+            let allScore = 0;
+            for (let index = 0; index < data.length; index++) {
+                const element = data[index];
+                allScore = allScore + element;
+            }
+            return allScore;
+        }
+
+        let calcCardScore = [];
+        calcCardScore.push(self.outcardsData[outlength-1].val);//先传最后一张牌
+        for (let index = 0; index < outlength - 1; index++) {
+            let val = self.outcardsData[outlength - 2 - index].val
+            if (val > 13) {
+                val  =  val - 13;
+            }
+            calcCardScore.push(val);
+            console.log('jisuande',calcCardScore);
+            if (calcScore(calcCardScore) == 21) {
+                for (let index = 0; index < calcCardScore.length; index++) {
+                    self.outcardsData.pop();
+                }
+                self.updateData();
+                return true;
+            }
+        }
+       return false ;
+    },
+
     
 });

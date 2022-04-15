@@ -213,10 +213,10 @@ cc.Class({
     }
   },
   gameStateHandler(state) {
-    this.btn_ready.active = ddzData.gameState < ddzConstants.gameState.GAMESTART
-    if (state === ddzConstants.gameState.WAITREADY) {
-      this.btn_ready.active = true
-    }
+    // this.btn_ready.active = ddzData.gameState < ddzConstants.gameState.GAMESTART
+    // if (state === ddzConstants.gameState.WAITREADY) {
+    //   this.btn_ready.active = true
+    // }
   },
   // 返回大厅
   onGoback() {
@@ -313,6 +313,18 @@ cc.Class({
         //获取节点绑定的组件
         const playerNode = node.getComponent("player_node")
         if (playerNode.userId === userId) return playerNode
+      }
+    }
+    return null
+  },
+  //获取index
+  getUserIndexNodeByAccount(userId) {
+    for (let i = 0; i < this.playerNodeList.length; i++) {
+      const node = this.playerNodeList[i]
+      if (node) {
+        //获取节点绑定的组件
+        const playerNode = node.getComponent("player_node")
+        if (playerNode.userId === userId) return playerNode.seat_index
       }
     }
     return null

@@ -26,6 +26,7 @@ const ddzServers = {
       $socket.on('rootgetCardNotify', this.nextPlayegetCard, this) // 摸牌消息
       $socket.on('playAHandNotify', this.playAHandNotify, this) // 出牌消息
       $socket.on('nextPlayerNotify', this.nextPlayerNotify, this) 
+      $socket.on('updateUserScore', this.updateUserScore, this) 
     }
   },
   gameStateHandler(value) {
@@ -56,18 +57,14 @@ const ddzServers = {
         this.playCard(this.playersData[this.landlordId])
         break
       case states.GAMEEND: // 游戏结束
-        const userId = mygolbal.playerData.userId
-        const winPlayer = this.playersData[this.roundWinId]
-        const nextPlayer1 = winPlayer.nextPlayer
-        const nextPlayer2 = nextPlayer1.nextPlayer
-        let isWin = this.roundWinId === userId || winPlayer.isLandlord === this.playersData[userId].isLandlord
-        window.$socket.emit('gameEndNotify', {
-          isWin, // 是否胜利
-          otherPlayerCards: { // 其他玩家剩余手牌
-            [nextPlayer1.userId]: nextPlayer1.cardList,
-            [nextPlayer2.userId]: nextPlayer2.cardList
-          }
-        })
+        // const userId = mygolbal.playerData.userId
+        // const winPlayer = this.playersData[this.roundWinId]
+        // const nextPlayer1 = winPlayer.nextPlayer
+        // const nextPlayer2 = nextPlayer1.nextPlayer
+        // let isWin = this.roundWinId === userId || winPlayer.isLandlord === this.playersData[userId].isLandlord
+        window.$socket.emit('gameEndNotify', 
+          this.playersData
+        )
         break
     }
   },
@@ -87,31 +84,39 @@ const ddzServers = {
     console.log('sssc',this.handCardOther);
     console.log('新牌', cardList)
     const playersData = {
-      players: [userId, rightPlayerId, leftPlayerId,, thirdPlayerId], // 当前房间玩家id集合
+      players: [userId, rightPlayerId, leftPlayerId, thirdPlayerId], // 当前房间玩家id集合
       cards: cardList[3], // 底牌
       // 玩家
       [userId]: {
         isLandlord: false,
         userId,
         cardList: cardList[0],
+        score:0,
+        scoreArray:[],
       },
       // 右边机器人
       [rightPlayerId]: {
         isLandlord: false,
         userId: rightPlayerId,
         cardList: cardList[1],
+        score:0,
+        scoreArray:[],
       },
       // 右上机器人
       [leftPlayerId]: {
         isLandlord: false,
         userId: leftPlayerId,
         cardList: cardList[2],
+        score:0,
+        scoreArray:[],
       },
       // 第三机器人
       [thirdPlayerId]: {
         isLandlord: false,
         userId: thirdPlayerId,
         cardList: cardList[3],
+        score:0,
+        scoreArray:[],
       }
     }
     // 指定玩家顺序
@@ -144,6 +149,14 @@ const ddzServers = {
     }
     
   },
+  //更新每个玩家的分数
+  updateUserScore(userID,score){
+    if (userID == mygolbal.playerData.userId ) {
+      this.playersData[userID].scoreArray.push(score);
+    }
+    let userScore = this.playersData[userID].score;
+    this.playersData[userID].score = userScore + score;
+  },
 
   //通知摸牌
   getCard(player) {
@@ -171,13 +184,14 @@ const ddzServers = {
   // 发布出牌通知
   playCard(player) {
     console.log('出牌-----', player)
-    const isOver = this.roundWinId && !this.playersData[this.roundWinId].cardList.length
-    if (isOver) {
-      // 游戏结束
-      this.setGameState(ddzConstants.gameState.GAMEEND)
-      return
-    }
-    
+    // const isOver = this.roundWinId && !this.playersData[this.roundWinId].cardList.length
+    //最后一个玩家出完所有牌，或者所有暗牌被摸完
+    // if ( player.cardList.length == 0) {
+    //   // 游戏结束
+    //   this.setGameState(ddzConstants.gameState.GAMEEND)
+    //   return
+    // }
+    let self = this;
     const ai = new AILogic(player)
     if (player.userId === mygolbal.playerData.userId) {
       // 准备要提示的牌
@@ -229,6 +243,13 @@ const ddzServers = {
         this.winCards = result
         // window.playUI.reDraw();
       }
+    }
+
+    if (self.handCardOther.length == 0) {
+      // 游戏结束
+      console.log('jialeliangcddi?');
+      this.setGameState(ddzConstants.gameState.GAMEEND)
+      return
     }
   },
   // 玩家抓取一张牌

@@ -18,7 +18,12 @@ cc.Class({
     loseNode: cc.Node, // 失败特效节点
     winNode: cc.Node, // 胜利特效节点
     scoreNumLabel: cc.Label, // 桌子上面 牌的总点数
-
+    score_prefab: cc.Prefab, // 得分节点
+    result_prefab: cc.Prefab, // 结算
+    scoreFaceNode: {
+      type: cc.Node,
+      default: []
+    },
     fapaiAudio: {
       type: cc.AudioClip,
       default: null
@@ -65,78 +70,7 @@ cc.Class({
     this.push_card_tmp = []
     // 提示牌型
     this.promptCount = 0
-    // this.promptList = []
-    //监听服务器可以出牌消息
-    // myglobal.socket.onCanChuCard(function (data) {
-    //   console.log("onCanChuCard" + JSON.stringify(data))
-    //   //判断是不是自己能出牌
-    //   if (data == myglobal.playerData.userId) {
-    //     //先清理出牌区域
-    //     this.clearOutZone(myglobal.playerData.userId)
-    //     //先把自己出牌列表置空
-    //     //this.choose_card_data=[]
-    //     //显示可以出牌的UI
-    //     this.playingUI_node.active = true
-
-    //   }
-    // }.bind(this))
-
-    //监听服务器：其他玩家出牌消息
-    // myglobal.socket.onOtherPlayerChuCard(function (data) {
-    //   //{"userId":"2357540","cards":[{"index":4,"card_data":{"index":4,"value":1,"shape":1}}]}
-    //   console.log("onOtherPlayerChuCard" + JSON.stringify(data))
-
-    //   var userId = data.userId
-    //   var gameScene_script = this.node.parent.getComponent("gameScene")
-    //   //获取出牌区域节点
-    //   var outCard_node = gameScene_script.getUserOutCardPosByAccount(userId)
-    //   if (outCard_node == null) {
-    //     return
-    //   }
-
-    //   var node_cards = []
-    //   for (var i = 0; i < data.cards.length; i++) {
-    //     var card = cc.instantiate(this.card_prefab)
-    //     card.getComponent("card").showCards(data.cards[i].card_data, myglobal.playerData.userId)
-    //     node_cards.push(card)
-    //   }
-    //   this.appendOtherCardsToOutZone(outCard_node, node_cards, 0)
-    // }.bind(this))
-
-    //内部事件:显示底牌事件,data是三张底牌数据
-    // this.node.on("show_bottom_card_event", function (data) {
-    //   console.log("----show_bottom_card_event", data)
-    //   this.bottom_card_data = data
-    //   for (var i = 0; i < data.length; i++) {
-    //     var card = this.bottom_card[i]
-    //     var show_data = data[i]
-    //     var call_data = {
-    //       "obj": card,
-    //       "data": show_data,
-    //     }
-    //     var run = cc.callFunc(function (target, activedata) {
-    //       var show_card = activedata.obj
-    //       var show_data = activedata.data
-    //       show_card.getComponent("card").showCards(show_data)
-    //     }, this, call_data)
-
-    //     card.runAction(
-    //       cc.sequence(cc.rotateBy(0, 0, 180),
-    //         cc.rotateBy(0.2, 0, -90),
-    //         run,
-    //         cc.rotateBy(0.2, 0, -90),
-    //         cc.scaleBy(1, 1.2))
-    //     )
-    //   }
-    //   common.audio.PlayEffect(this.cardsAudio)
-    //   //this.node.parent.emit("change_room_state_event",defines.gameState.ROOM_PLAYING)
-    //   //如果自己地主，给加上三张底牌
-    //   if (myglobal.playerData.userId === myglobal.playerData.masterUserId) {
-    //     this.scheduleOnce(this.pushThreeCard.bind(this), 0.2)
-    //   }
-
-
-    // }.bind(this))
+  
 
     //注册监听一个选择牌消息 
     this.node.on("choose_card_event", function (cardData) {
@@ -356,24 +290,29 @@ cc.Class({
     const playerNode = gameScene_script.getUserNodeByAccount(userId)
     if (!playerNode) return
     playerNode.schedulerOnce(() => {
-      this.appendOtherCardsToOutZone(outCard_node, cards[0], 0)
+      this.appendOtherCardsToOutZone(outCard_node, cards[0], userId)
       playerNode.subtractCards(cards.length)
       // 通知服务，下一家出牌
       window.$socket.emit('rootgetCardNotify', userId)
     }, delay)
   },
   // 游戏结束
-  gameEndNotify({ isWin, otherPlayerCards }) {
+  gameEndNotify(PlayerData ) {
+    console.log('jialeliangci?');
     var self = this;
-    console.log('游戏结束', { isWin, otherPlayerCards })
-    if (isWin) {
-      this.winNode.active = true
-    } else {
-      this.loseNode.active = true
-    }
+    console.log(PlayerData )
     ddzData.gameState = ddzConstants.gameState.WAITREADY
     self.outcardnode.getComponent('gameOutCardUI').resetData();
-
+    //显示结算界面
+    let resultSence = cc.instantiate(self.result_prefab)
+    resultSence.parent = self.node;
+    resultSence.getComponent('gameResult').initData(PlayerData);
+    //清空每个玩家的笑脸
+    for (let index = 0; index < self.scoreFaceNode.length; index++) {
+        const element = self.scoreFaceNode[index];
+        element.removeAllChildren();
+    }
+    
   },
   //对牌排序
   sortCard() {
@@ -444,59 +383,9 @@ cc.Class({
       this.cards_node.push(card)
       this.card_width = card.width
     }
-    //创建3张底牌
-    // this.bottom_card = []
-    // for (var i = 0; i < 3; i++) {
-    //   var di_card = cc.instantiate(this.card_prefab)
-    //   di_card.scale = 0.4
-    //   // di_card.position = this.bottom_card_pos_node.position
-    //   //三张牌，中间坐标就是bottom_card_pos_node节点坐标，
-    //   //0,和2两张牌左右移动windth*0.4
-    //   if (i == 0) {
-    //     di_card.x = di_card.x - di_card.width * 0.5
-    //   } else if (i == 2) {
-    //     di_card.x = di_card.x + di_card.width * 0.5
-    //   }
-    //   //di_card.x = di_card.width-i*di_card.width-20
-    //   //di_card.y=60
-    //   // di_card.parent = this.node.parent
-    //   di_card.parent = this.bottom_card_pos_node
-    //   //存储在容器里
-    //   this.bottom_card.push(di_card)
-    // }
+    
   },
-  //给玩家发送三张底牌后，过1s,把牌设置到y=-250位置效果
-  // schedulePushThreeCard() {
-  //   for (var i = 0; i < this.cards_node.length; i++) {
-  //     var card = this.cards_node[i]
-  //     if (card.y == -230) {
-  //       card.y = -250
-  //     }
-  //   }
-  //   this.updateCards()
-  // },
-  //给地主发三张排，并显示在原有牌的后面
-  // pushThreeCard() {
-  //   //每张牌的其实位置 
-  //   var last_card_x = this.cards_node[this.cards_node.length - 1].x
-  //   for (var i = 0; i < this.bottom_card_data.length; i++) {
-  //     var card = cc.instantiate(this.card_prefab)
-  //     card.scale = 0.8
-  //     // card.parent = this.node.parent
-  //     card.parent = this.cardsNode
-
-  //     card.x = last_card_x + ((i + 1) * this.card_width * 0.4)
-  //     card.y = -230  //先把底盘放在-230，在设置个定时器下移到-250的位置
-
-  //     //console.log("pushThreeCard x:"+card.x)
-  //     card.getComponent("card").showCards(this.bottom_card_data[0], myglobal.playerData.userId)
-  //     card.active = true
-  //     this.cards_node.push(card)
-  //   }
-  //   this.sortCard()
-  //   //设置一个定时器，在2s后，修改y坐标为-250
-  //   this.scheduleOnce(this.schedulePushThreeCard.bind(this), 2)
-  // },
+  
   //自己手牌添加一张牌
   pushOneCard(carddata){
     var card = cc.instantiate(this.card_prefab)
@@ -584,42 +473,33 @@ cc.Class({
    * @description 桌面添加新牌
    * @param {cc.Node} outCard_node 玩家出牌区域节点
    * @param {List} cards 牌型节点集合
-   * @param {Number} yoffset 移动距离
+   *
    */
-  appendOtherCardsToOutZone(outCard_node, carddata, yoffset) {
+  appendOtherCardsToOutZone(outCard_node, carddata, userID) {
     var self = this;
-    // if (!cards.length) {
-    //   const index = common.random(0, 3)
-    //   common.audio.PlayEffect(this.buyaoAudio[index])
-    //   return
-    // }
+
     common.audio.PlayEffect(this.chupaiAudio)
-    //添加新的子节点
-    // for (var i = 0; i < cards.length; i++) {
-    //   var card = cards[i];S
-    //   outCard_node.addChild(card, 100 + i) //第二个参数是 zorder,保证牌不能被遮住
-    // }
+ 
     //添加到出牌堆里面
     self.outcardnode.getComponent('gameOutCardUI').updateData(carddata);
-    // var i = 1;
-    // var outcardnode = cc.instantiate(this.outCard_prefab);
-    // outcardnode.parent = this.node;
-    // outcardnode.addChild(cards[0], 100+i);
-    // i++;
-    
-    
+    //计算得分,处理牌数据
+    var gameScene_script = this.node.parent.getComponent("gameScene");
+    var userindex = gameScene_script.getUserIndexNodeByAccount(userID);
+    var scorePrefab = cc.instantiate(self.score_prefab) 
+    scorePrefab.parent = self.scoreFaceNode[userindex]
+    var scoreBool = self.outcardnode.getComponent('gameOutCardUI').calcDeskScore();
+    let scoreNum = 12;
+    if (scoreBool == true) {
+      //给当前玩家加分
+      scorePrefab.getComponent('scoreFace').initdata(scoreNum);
+    }else if(scoreBool == false){
+      scorePrefab.getComponent('scoreFace').initdata(scoreNum*(-1));
+      scoreNum= (-1)* scoreNum;
+    }
+    //发服务器记录每个玩家的分数
+    window.$socket.emit('updateUserScore',userID,scoreNum)
 
-    //对出牌进行排序
-    //设置出牌节点的坐标
-    // var zPoint = cards.length / 2;
-    // for (var i = 0; i < cards.length; i++) {
-    //   var cardNode = outCard_node.getChildren()[i]
-    //   var x = (i - zPoint) * 30;
-    //   var y = cardNode.y + yoffset; //因为每个节点需要的Y不一样，做参数传入
-    //   cardNode.setScale(0.5, 0.5);
-    //   cardNode.setPosition(x, y);
-    //   cc.log('chuanrude xy ',x,y)
-    // }
+    
   },
   //将 “选中的牌” 添加到出牌区域
   //destroy_card是玩家本次出的牌
@@ -630,7 +510,7 @@ cc.Class({
     var gameScene_script = this.node.parent.getComponent("gameScene")
     //获取出牌区域节点
     var outCard_node = gameScene_script.getUserOutCardPosByAccount(userId)
-    this.appendOtherCardsToOutZone(outCard_node, destroy_card, 360)
+    this.appendOtherCardsToOutZone(outCard_node, destroy_card, userId)
     //sconsole.log("OutZone:"+outCard_node.name)
   },
 
@@ -713,34 +593,7 @@ cc.Class({
           }
           this.choose_card_data = []
         })
-        // myglobal.socket.request_chu_card(this.choose_card_data, function (err, data) {
-        //   if (err) {
-        //     console.log("request_chu_card:" + err)
-        //     console.log("request_chu_card" + JSON.stringify(data))
-        //     if (this.tipsLabel.string == "") {
-        //       this.tipsLabel.string = data.msg
-        //       setTimeout(function () {
-        //         this.tipsLabel.string = ""
-        //       }.bind(this), 2000);
-        //     }
-        //     //出牌失败，把选择的牌归位
-        //     for (var i = 0; i < this.cards_node.length; i++) {
-        //       var card = this.cards_node[i]
-        //       card.emit("reset_card_flag")
-        //     }
-        //     this.choose_card_data = []
-        //   } else {
-        //     //出牌成功
-        //     console.log("resp_chu_card data:" + JSON.stringify(data))
-        //     this.playingUI_node.active = false
-        //     //播放出牌的声音
-        //     //resp_chu_card data:{"account":"2519901","msg":"sucess","cardvalue":{"name":"Double","value":1}}
-        //     //{"type":"other_chucard_notify","result":0,"data":{"userId":"2519901","cards":[{"index":24,"card_data":{"index":24,"value":6,"shape":1}},{"index":26,"card_data":{"index":26,"value":6,"shape":3}}]},"callBackIndex":0}
-        //     this.playPushCardSound(data.cardvalue.name)
-        //     this.destoryCard(data.account, this.choose_card_data)
-        //     this.choose_card_data = []
-        //   }
-        // }.bind(this))
+        
         break
      
        

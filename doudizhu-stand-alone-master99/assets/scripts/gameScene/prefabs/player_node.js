@@ -102,14 +102,14 @@ cc.Class({
     if (!CC_EDITOR) {
       ddzData.gameStateNotify.addListener(this.gameStateHandler, this)
     }
-    window.$socket.on('gameEndNotify', this.gameEndNotify, this) // 游戏结束
+    // window.$socket.on('gameEndNotify', this.gameEndNotify, this) // 游戏结束
   },
   onDestroy() {
     if (!CC_EDITOR) {
       ddzData.gameStateNotify.removeListener(this.gameStateHandler, this)
     }
     // window.$socket.remove('canrob_notify', this)
-    window.$socket.remove('gameEndNotify', this)
+    // window.$socket.remove('gameEndNotify', this)
   },
   //这里初始化房间内位置节点信息(自己和其他玩家)
   //data玩家节点数据
@@ -212,25 +212,25 @@ cc.Class({
     !Number(countLabel.string) && this.card_node.removeAllChildren()
   },
   // 游戏结束显示剩余牌型
-  gameEndNotify({otherPlayerCards}) {
-    const cardList = otherPlayerCards[this.userId]
-    const cards = this.cardlist_node
-    if (!cardList || this.userId === myglobal.playerData.userId) return
-    cardList.sort((a, b) => b.val - a.val)
-    for (let i = 0; i < cardList.length; i++) {
-      let card = cards[i]
-      // card.y = (17 - 1) * 0.5 * card.height * 0.4 * 0.3 - card.height * 0.4 * 0.3 * i;
-      if (card) {
-        card.getChildByName('count').getComponent(cc.Label).string = ''
-      } else {
-        card = cc.instantiate(this.card_prefab)
-        card.scale = 0.6
-        card.parent = this.card_node
-        cards.push(card)
-      }
-      card.getComponent("card").showCards(cardList[i], this.userId)
-    }
-  },
+  // gameEndNotify({otherPlayerCards}) {
+  //   const cardList = otherPlayerCards[this.userId]
+  //   const cards = this.cardlist_node
+  //   if (!cardList || this.userId === myglobal.playerData.userId) return
+  //   cardList.sort((a, b) => b.val - a.val)
+  //   for (let i = 0; i < cardList.length; i++) {
+  //     let card = cards[i]
+  //     // card.y = (17 - 1) * 0.5 * card.height * 0.4 * 0.3 - card.height * 0.4 * 0.3 * i;
+  //     if (card) {
+  //       card.getChildByName('count').getComponent(cc.Label).string = ''
+  //     } else {
+  //       card = cc.instantiate(this.card_prefab)
+  //       card.scale = 0.6
+  //       card.parent = this.card_node
+  //       cards.push(card)
+  //     }
+  //     card.getComponent("card").showCards(cardList[i], this.userId)
+  //   }
+  // },
   //清除显示出牌节点全部子节点(就是把出牌的清空)
   clearOutZone() {
     var gameScene_script = this.getGameScene()
