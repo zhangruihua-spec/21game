@@ -9,8 +9,8 @@ cc.Class({
   properties: {
     gameingUI: cc.Node,
     card_prefab: cc.Prefab,
-    robUI: cc.Node, // 抢地主按钮节点
-    timeLabel: cc.Label, // 计时器节点
+    // robUI: cc.Node, // 抢地主按钮节点
+    // timeLabel: cc.Label, // 计时器节点
     cardsNode: cc.Node, // 扑克节点
     bottom_card_pos_node: cc.Node, // 底牌节点
     playingUI_node: cc.Node, // 出牌提示节点
@@ -20,8 +20,20 @@ cc.Class({
     scoreNumLabel: cc.Label, // 桌子上面 牌的总点数
     score_prefab: cc.Prefab, // 得分节点
     result_prefab: cc.Prefab, // 结算
+
+    chooseThree_prefab: cc.Prefab, // 特殊技能，三张中选一张
+
+    skillNode: cc.Node, // 跳过 node
+    skillSp: cc.Sprite, // 跳过 bg
+    skillLab: cc.Label, // 跳过 txt
+
     scoreFaceNode: {
       type: cc.Node,
+      default: []
+    },
+    //剩余次数颜色
+    timesBg: {
+      type: cc.SpriteFrame,
       default: []
     },
     fapaiAudio: {
@@ -56,6 +68,10 @@ cc.Class({
     //自己牌列表 
     this.cards_node = []
     this.card_width = 0
+    this.skipTimes = 0
+    this.reverseTimes = 0
+    this.randomTimes = 0
+    this.exchangeTimes =0
     //当前可以抢地主的accountid
     // this.rob_player_accountid = 0
     //发牌动画是否结束
@@ -83,7 +99,16 @@ cc.Class({
           this.choose_card_data.splice(i, 1)
         }
       }
-    }.bind(this))
+    }.bind(this));
+    if ( cc.sys.localStorage.getItem('roleData') == 2) {
+      this.skipTimes = 3;
+    }else if(cc.sys.localStorage.getItem('roleData') == 4 ){
+      this.reverseTimes = 2;
+    }else if(cc.sys.localStorage.getItem('roleData') == 3 ){
+      this.randomTimes = 3;
+    }else if(cc.sys.localStorage.getItem('roleData') == 1 ){
+      this.exchangeTimes = 2;
+    }
   },
   start() {
     var self = this;
@@ -101,9 +126,11 @@ cc.Class({
 
     window.$socket.on('selfGetAHandNotify', this.selfGetAHandNotify, this) // 摸牌
     window.$socket.on('rootGetAHandNotify', this.rootGetAHandNotify, this) // 机器摸牌
+
+    window.$socket.on('chooseFromThreeCard', this.chooseFromThreeCard, this) // 特殊 三张选一张
+    window.$socket.on('refreshHandCard', this.refreshHandCard, this) // 刷新下自己的手牌
     
     window.$socket.on('gameEndNotify', this.gameEndNotify, this) // 游戏结束
-
    
     //添加一个出牌队列
     self.outcardnode = cc.instantiate(this.outCard_prefab);
@@ -126,7 +153,7 @@ cc.Class({
     window.$socket.remove('rootGetAHandNotify', this)
 
     window.$socket.remove('_refreshDeskScore', this)
-
+    window.$socket.remove('refreshHandCard', this)
     window.$socket.remove('gameEndNotify', this)
   },
 
@@ -136,6 +163,15 @@ cc.Class({
       if (self.scoreNumLabel) {
         self.scoreNumLabel.string =''+ data;
       }
+    }
+  },
+  chooseFromThreeCard(data){
+    console.log('kehuduande',data);
+    let self = this;
+    if (data) {
+      let chooseNode = cc.instantiate(self.chooseThree_prefab)
+      chooseNode.parent = this.node;
+      chooseNode.getComponent('chooseCard').initCardData(data);
     }
   },
   _chooseCardNotify(cardData) {
@@ -213,24 +249,24 @@ cc.Class({
   },
 
   //开启一个定时器
-  customSchedulerOnce() {
-    this.count = 10;
-    const callback = function () {
-      if (!this.robUI.active) return
-      if (!this.count) {
-        // 在第六次执行回调时取消这个计时器
-        this.robUI.active = false
-        this.unschedule(callback)
-        window.$socket.emit('canrob_state_notify', {
-          userId: myglobal.playerData.userId,
-          state: qian_state.buqiang,
-        })
-        common.audio.PlayEffect(this.buqiangAudio)
-      }
-      this.timeLabel.string = --this.count
-    }
-    this.schedule(callback, 1, 10)
-  },
+  // customSchedulerOnce() {
+  //   this.count = 10;
+  //   const callback = function () {
+  //     if (!this.robUI.active) return
+  //     if (!this.count) {
+  //       // 在第六次执行回调时取消这个计时器
+  //       this.robUI.active = false
+  //       this.unschedule(callback)
+  //       window.$socket.emit('canrob_state_notify', {
+  //         userId: myglobal.playerData.userId,
+  //         state: qian_state.buqiang,
+  //       })
+  //       common.audio.PlayEffect(this.buqiangAudio)
+  //     }
+  //     this.timeLabel.string = --this.count
+  //   }
+  //   this.schedule(callback, 1, 10)
+  // },
   /**
    * @description 出牌
    */
@@ -255,9 +291,50 @@ cc.Class({
     // this.promptList = promptList
     // 先清理出牌区域
     // 显示可以出牌的UI
+    let self = this;
     this.playingUI_node.active = true;//展示摸牌按钮
     this.playingUI_node.getChildByName('btn_mopai').active = true;
     this.playingUI_node.getChildByName('btn_chupai').active = false;
+   
+    self.showSkillNode(2,self.skipTimes);
+    self.showSkillNode(3,self.randomTimes);
+    self.showSkillNode(4,self.reverseTimes);
+    
+  },
+
+  showSkillNode(roleindex,skillNum){
+    let bslillShow = JSON.parse(cc.sys.localStorage.getItem('roleData'))  ==  roleindex;
+    let btnName = '';
+    let tipsName = ''
+    switch (roleindex) {
+      case 1:
+          btnName = 'btn_exchange';
+          tipsName = 'Exchange times'
+          break;
+      case 2:
+          btnName = 'btn_skip';
+          tipsName = 'Skip times'
+          break;
+      case 3:
+          btnName = 'btn_random';
+          tipsName = 'Random times'
+          break;
+      case 4:
+          btnName = 'btn_reverse';
+          tipsName = 'Reverse times';
+          break;
+      default:
+        break;
+    }
+    if (bslillShow && skillNum > 0) {
+      this.playingUI_node.getChildByName(btnName).active = bslillShow; 
+      this.skillLab.node.color = cc.color().fromHEX("#905a0e");
+      this.skillSp.spriteFrame = this.timesBg[0];
+      this.skillLab.string = tipsName+' ('+skillNum+')';
+    }
+    if (bslillShow) {
+      this.skillNode.active =  true;
+    }
   },
 
    /**
@@ -268,7 +345,14 @@ cc.Class({
       const playerNode = gameScene_script.getUserNodeByAccount(userId)
       this.playingUI_node.active = false;
       //牌面上的数字加一
-      playerNode.subtractCards(-1);
+      playerNode.subtractCards(-1)
+      ;
+      this.playingUI_node.getChildByName('btn_skip').active = false;
+      this.playingUI_node.getChildByName('btn_reverse').active = false;
+      this.playingUI_node.getChildByName('btn_random').active = false;
+      this.playingUI_node.getChildByName('btn_exchange').active = false;
+      this.skillSp.spriteFrame = this.timesBg[1];
+      this.skillLab.node.color = cc.color().fromHEX("#414347");
     },
   
 
@@ -347,6 +431,11 @@ cc.Class({
       }
     }.bind(this), timeout);
   },
+  //增加牌的时候，更新下手牌
+  refreshHandCard(data){
+    this.playingUI_node.getChildByName('btn_random').active = false;
+    this.pushOneCard(data);
+  },
   pushCard(data) {
     if (data) {
       data.sort(function (a, b) {
@@ -405,9 +494,12 @@ cc.Class({
     window.$socket.emit('nextPlayerNotify', myglobal.playerData.userId)
   },
 
-  destoryCard(userId, choose_card) {
+  destoryCard(userId, choose_card,skill = 0) {
     if (!choose_card.length) return
-    if (choose_card.length > 1) return
+    if (skill != 1) {
+      if (choose_card.length > 1) return
+    }
+   
     /*出牌逻辑
       1. 将选中的牌 从父节点中移除
       2. 从this.cards_node 数组中，删除 选中的牌 
@@ -431,7 +523,10 @@ cc.Class({
         }
       }
     }
-    this.appendCardsToOutZone(userId, choose_card[0])
+    if (skill != 1) {
+      this.appendCardsToOutZone(userId, choose_card[0])
+    }
+    
     this.updateCards()
   },
 
@@ -540,6 +635,7 @@ cc.Class({
   },
   // update (dt) {},
   onButtonClick(event, customData) {
+    let self = this;
     switch (customData) {
       case "nopushcard":  // 不出牌
         // myglobal.socket.request_buchu_card([], null)
@@ -558,7 +654,8 @@ cc.Class({
               // this.destoryCard(myglobal.playerData.userId, this.choose_card_data)
               this.playingUI_node.active = false;
               //显示当前牌
-              this.pushOneCard(carddata);
+              self.pushOneCard(carddata);
+              self.showSkillNode(1,self.exchangeTimes);
             } else {
               //出牌失败，把选择的牌归位
               // this.cards_node.map(node => node.emit("reset_card_flag"))
@@ -568,11 +665,13 @@ cc.Class({
             }
             // this.choose_card_data = []
           })
+          this.playingUI_node.getChildByName('btn_skip').active = false; 
+          this.playingUI_node.getChildByName('btn_reverse').active = false; 
           break
       case "pushcard":   // 出牌
         //先获取本次出牌数据
         if (this.choose_card_data.length == 0) {
-          this.tipsLabel.string = "请选择牌!"
+          this.tipsLabel.string = "Please select the card to play!"
           setTimeout(function () {
             this.tipsLabel.string = ""
           }.bind(this), 2000);
@@ -593,12 +692,88 @@ cc.Class({
           }
           this.choose_card_data = []
         })
-        
         break
-     
-       
+      case "skip":   //跳过  == 技能2
+          window.$socket.emit('playSkipNotify',myglobal.playerData.userId);
+          this.skipTimes -= 1;
+          //设置当前的次数 颜色  (置灰)
+          this.setSkillState(this.skipTimes);
+          // this.skillLab.string = 'Skip times ('+this.skipTimes+')';
+          // this.skillLab.node.color = cc.color().fromHEX("#414347");
+          // this.skillSp.spriteFrame = this.timesBg[1];
+          // this.skillNode.active =  true;
+          break;
+      case "randomCard":   //随机从牌堆的三张中选一张出来s
+          this.randomTimes -= 1;
+          window.$socket.emit('randomThreeCard',myglobal.playerData.userId);
+          this.setSkillState( this.randomTimes);
+          break;
+      case "reverse":   //反转出牌顺序  == 技能4
+          //先跳过自己出牌
+          window.$socket.emit('ChangePlayingOrder');
+          window.$socket.emit('playSkipNotify',myglobal.playerData.userId);
+          this.reverseTimes -= 1;
+          this.setSkillState( this.reverseTimes);
+          //再反转
+          break;
+      case "exchange":   //交换手牌和暗牌堆里面的  == 技能1
+          if (this.choose_card_data.length == 0) {
+            this.tipsLabel.string = "Please select the card to play!"
+            setTimeout(function () {
+              this.tipsLabel.string = ""
+            }.bind(this), 2000);
+          }
+
+          window.$socket.emit('exchangeCard', {
+            userId: myglobal.playerData.userId,
+            cards: this.choose_card_data,
+          }, ({state}) => {
+            if (state === 1) {
+              let skill = 1;
+              this.destoryCard(myglobal.playerData.userId, this.choose_card_data,skill)
+              // this.playingUI_node.active = ;
+            } else {
+              //出牌失败，把选择的牌归位
+              this.cards_node.map(node => node.emit("reset_card_flag"))
+            }
+            this.choose_card_data = []
+          })
+
+          //先跳过自己出牌
+          // this.playingUI_node.active = false;
+          this.exchangeTimes -= 1;
+          this.setSkillState( this.exchangeTimes);
+          this.playingUI_node.getChildByName('btn_exchange').active = false;
+          //再反转
+          break;
       default:
         break
     }
+  },
+
+  //
+  setSkillState(count){
+    let roleindex =JSON.parse(cc.sys.localStorage.getItem('roleData')) ;
+    let tipsName = ''
+    switch (roleindex) {
+      case 1:
+          tipsName = 'Exchange times'
+          break;
+      case 2:
+          tipsName = 'Skip times'
+          break;
+      case 3:
+          tipsName = 'Random times'
+          break;
+      case 4:
+          tipsName = 'Reverse times';
+          break;
+      default:
+        break;
+    }
+    this.skillLab.string = tipsName+' ('+count+')';
+    this.skillLab.node.color = cc.color().fromHEX("#414347");
+    this.skillSp.spriteFrame = this.timesBg[1];
+    this.skillNode.active =  true;
   }
 });

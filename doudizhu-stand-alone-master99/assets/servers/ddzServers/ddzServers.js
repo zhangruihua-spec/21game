@@ -11,6 +11,7 @@ const ddzServers = {
   robplayer: [], // 复制一份房间内player,做抢地主操作
   landlordId: '', // 当前地主id
   handCardOther: [], // 发完手牌之后剩余的牌
+  bTurnOrder:0,//正常是顺时针出牌
   /*
     * 当前桌面牌信息
     *  roundWinId 本轮当前赢牌的玩家userId
@@ -25,8 +26,15 @@ const ddzServers = {
       $socket.on('getCardNotify', this.getCardNotify, this) // 摸牌消息
       $socket.on('rootgetCardNotify', this.nextPlayegetCard, this) // 摸牌消息
       $socket.on('playAHandNotify', this.playAHandNotify, this) // 出牌消息
+      $socket.on('playSkipNotify', this.playSkipNotify, this) // 跳过技能2  -- 不摸牌也不出牌
+      $socket.on('ChangePlayingOrder', this.ChangePlayingOrder, this) // 反转技能  4
+      $socket.on('randomThreeCard', this.randomThreeCard, this) // 3 随机给一张牌，技能
       $socket.on('nextPlayerNotify', this.nextPlayerNotify, this) 
       $socket.on('updateUserScore', this.updateUserScore, this) 
+      $socket.on('threeSelectedCard', this.threeSelectedCard, this)  // 3  随机选牌中，选中的一张
+
+      $socket.on('exchangeCard', this.exchangeCard, this)  // 1  改变下手牌的值，和暗牌堆交换
+
     }
   },
   gameStateHandler(value) {
@@ -119,13 +127,39 @@ const ddzServers = {
         scoreArray:[],
       }
     }
-    // 指定玩家顺序
-    playersData[userId].nextPlayer = playersData[rightPlayerId]
-    playersData[rightPlayerId].nextPlayer = playersData[leftPlayerId]
-    playersData[leftPlayerId].nextPlayer = playersData[thirdPlayerId]
-    playersData[thirdPlayerId].nextPlayer = playersData[userId]
+    // 指定玩家顺序（顺时针）
+    // playersData[userId].nextPlayer = playersData[rightPlayerId]
+    // playersData[rightPlayerId].nextPlayer = playersData[leftPlayerId]
+    // playersData[leftPlayerId].nextPlayer = playersData[thirdPlayerId]
+    // playersData[thirdPlayerId].nextPlayer = playersData[userId]
+
+    playersData[userId].nextPlayer = playersData[thirdPlayerId]
+    playersData[thirdPlayerId].nextPlayer = playersData[leftPlayerId]
+    playersData[leftPlayerId].nextPlayer = playersData[rightPlayerId]
+    playersData[rightPlayerId].nextPlayer = playersData[userId]
 
     return playersData
+  },
+  //更改为逆时针方向
+  ChangePlayingOrder(){
+    let self = this;
+    const { userId, rootList } = mygolbal.playerData
+    const rightPlayerId = rootList[0].userId
+    const leftPlayerId = rootList[1].userId
+    const thirdPlayerId = rootList[2].userId
+    if (self.bTurnOrder == 0) {
+      self.bTurnOrder = 1;
+      this.playersData[userId].nextPlayer = this.playersData[rightPlayerId]
+      this.playersData[rightPlayerId].nextPlayer = this.playersData[leftPlayerId]
+      this.playersData[leftPlayerId].nextPlayer = this.playersData[thirdPlayerId]
+      this.playersData[thirdPlayerId].nextPlayer = this.playersData[userId]
+    } else {
+      self.bTurnOrder = 0;
+      this.playersData[userId].nextPlayer =  this.playersData[thirdPlayerId]
+      this.playersData[thirdPlayerId].nextPlayer =  this.playersData[leftPlayerId]
+      this.playersData[leftPlayerId].nextPlayer =  this.playersData[rightPlayerId]
+      this.playersData[rightPlayerId].nextPlayer =  this.playersData[userId]
+    }
   },
  
   // 当前玩家出牌
@@ -180,6 +214,86 @@ const ddzServers = {
       
     }
   },
+  //技能1 随机换几张牌
+  exchangeCard({ userId, cards }, callback){
+    let self = this;
+    // 1，判断暗牌堆里面确实足够数量的可以换
+    if (self.handCardOther.length < cards.length) {
+      return;
+    }
+     // 2，删除玩家出的牌
+     const selfCards = this.playersData[userId].cardList
+     for (let i = 0; i < cards.length; i++) {
+       for (let j = 0; j < selfCards.length; j++) {
+         cards[i].val === selfCards[j].val && cards[i].shape === selfCards[j].shape && selfCards.splice(j, 1)
+       }
+     }
+     // 3，在暗牌中找出数量一样的牌交换
+   
+     let userNum = cards.length;
+     let handcard = [];
+     for (let index = 0; index < userNum; index++) {
+        handcard.push(self.handCardOther[index]);
+        window.$socket.emit('refreshHandCard',self.handCardOther[index]);
+     }
+    //  console.log('hhhdd--000',forChangeCardData)
+     console.log('hhhdd--1111',self.handCardOther)
+     self.handCardOther.splice(0,userNum,[cards])
+     console.log('hhhdd--2222',self.handCardOther)
+
+     console.log('hhhdd-333',handcard)
+
+     callback && callback({
+      state: 1
+    })
+
+     
+    //  this.nextPlayegetCard(userId);
+
+  },
+  //随机出来三张牌给玩家选择一张
+  randomThreeCard(player){
+    let self = this;
+    if (self.handCardOther.length < 3) {
+      return;
+    }
+    console.log('dedaoindextoodll', self.handCardOther);
+    let handlenght = self.handCardOther.length;
+    let handIndex =  Math.round(Math.random()*handlenght);
+    let threeCard =[]
+    let handIndex2  = handIndex+1 < handlenght - 1 ? handIndex + 1: (handIndex+1)%(handIndex-1)
+    let handIndex3  = handIndex+2 < handlenght - 1 ? handIndex + 2: (handIndex+2)%(handIndex-1)
+    console.log('dedaoindex',handIndex)
+    console.log('dedaoindex',handIndex2)
+    console.log('dedaoindex',handIndex3)
+    threeCard.push(self.handCardOther[handIndex])
+    threeCard.push(self.handCardOther[handIndex2])
+    threeCard.push(self.handCardOther[handIndex3])
+    console.log('dedaoindexss',threeCard)
+    //发送给客户端
+    window.$socket.emit('chooseFromThreeCard',threeCard);
+  },
+  //通知服务器我选中的牌
+  threeSelectedCard(data){
+    let self = this;
+      //1,先从牌堆删除
+      console.log('yyrr-d1',self.handCardOther)
+      console.log('yyrr-d2',data)
+      for (let j = 0; j < self.handCardOther.length; j++) {
+        const element = self.handCardOther[j];
+        if ( self.handCardOther[j].index == data.index ) {
+          self.handCardOther.splice(j,1);
+        }
+      }
+      console.log('yyrr-d3',self.handCardOther)
+      //2,添加到我自己的手牌上
+      self.playersData[mygolbal.playerData.userId].cardList.push(data);
+      window.$socket.emit('refreshHandCard',data);
+      
+      //3,通知我自己出牌
+      self.playCard(mygolbal.playerData);
+  },
+
 
   // 发布出牌通知
   playCard(player) {
@@ -192,7 +306,7 @@ const ddzServers = {
     //   return
     // }
     let self = this;
-    const ai = new AILogic(player)
+    // const ai = new AILogic(player)
     if (player.userId === mygolbal.playerData.userId) {
       // 准备要提示的牌
       // const winc = this.roundWinId && this.roundWinId !== player.userId ? this.winCards : null
@@ -201,6 +315,7 @@ const ddzServers = {
       // 自己先摸一张牌，再丢一张牌到牌堆
       window.$socket.emit('selfPlayAHandNotify');
     } else {
+      const ai = new AILogic(player)
       // 机器出牌
       let result = null
       // if (!this.roundWinId || this.roundWinId === player.userId) {
@@ -279,6 +394,11 @@ const ddzServers = {
 
     //提示出牌
   },
+  //跳过出牌
+  playSkipNotify(userId){
+    this.nextPlayegetCard(userId);
+  },
+
   // 玩家自己出牌消息
   playAHandNotify({ userId, cards }, callback) {
     console.log(cards)
@@ -304,7 +424,7 @@ const ddzServers = {
         cards[i].val === selfCards[j].val && cards[i].shape === selfCards[j].shape && selfCards.splice(j, 1)
       }
     }
-    //其他玩家发牌
+    
     this.nextPlayegetCard(userId);
   },
   /**

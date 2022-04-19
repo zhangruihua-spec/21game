@@ -10,23 +10,23 @@ const defines = {
   serverUrl: 'http://localhost:3000',
   jdRoomConfig: {
     'rate_1': {
-      needCostGold: 10,
+      needCostGold: 5,
       bottom: 1,
       rate: 1
     },
     'rate_2': {
-      needCostGold: 100,
+      needCostGold: 50,
       bottom: 10,
       rate: 2
     },
     'rate_3': {
-      needCostGold: 200,
-      bottom: 20,
+      needCostGold: 250,
+      bottom: 50,
       rate: 3
     },
     'rate_4': {
       needCostGold: 500,
-      bottom: 50,
+      bottom: 100,
       rate: 4
     }
   },
