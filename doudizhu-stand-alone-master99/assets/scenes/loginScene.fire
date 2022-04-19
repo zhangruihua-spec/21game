@@ -40,7 +40,7 @@
     },
     "_trs": {
       "__type__": "TypedArray",
-      "ctor": "Float64Array",
+      "ctor": "Float32Array",
       "array": [
         0,
         0,
@@ -123,7 +123,7 @@
     },
     "_trs": {
       "__type__": "TypedArray",
-      "ctor": "Float64Array",
+      "ctor": "Float32Array",
       "array": [
         640,
         360,
@@ -188,7 +188,7 @@
     },
     "_trs": {
       "__type__": "TypedArray",
-      "ctor": "Float64Array",
+      "ctor": "Float32Array",
       "array": [
         0,
         0,
@@ -231,7 +231,7 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {
-      "__uuid__": "af045fc6-2fda-4388-b529-6c6d3c9b67e6"
+      "__uuid__": "15c05f9e-d5d8-47b2-91da-74f0eed50351"
     },
     "_type": 0,
     "_sizeMode": 1,
@@ -309,11 +309,11 @@
     },
     "_trs": {
       "__type__": "TypedArray",
-      "ctor": "Float64Array",
+      "ctor": "Float32Array",
       "array": [
         0,
         0,
-        366.32109354593376,
+        283.1903076171875,
         0,
         0,
         0,
@@ -369,7 +369,6 @@
       "height": 1
     },
     "_renderStages": 1,
-    "_alignWithScreen": true,
     "_id": "0f3jB70lpMj7genUx9wref"
   },
   {
@@ -410,7 +409,7 @@
     },
     "_trs": {
       "__type__": "TypedArray",
-      "ctor": "Float64Array",
+      "ctor": "Float32Array",
       "array": [
         -485,
         36,
@@ -419,8 +418,8 @@
         0,
         0,
         1,
-        0.8,
-        0.8,
+        0.800000011920929,
+        0.800000011920929,
         1
       ]
     },
@@ -477,8 +476,6 @@
       "__id__": 8
     },
     "_enabled": true,
-    "_normalMaterial": null,
-    "_grayMaterial": null,
     "duration": 0.1,
     "zoomScale": 1.1,
     "clickEvents": [
@@ -592,18 +589,18 @@
     },
     "_trs": {
       "__type__": "TypedArray",
-      "ctor": "Float64Array",
+      "ctor": "Float32Array",
       "array": [
-        187.654,
-        -273.141,
+        187.6540069580078,
+        -273.1409912109375,
         0,
         0,
         0,
         0,
         1,
-        0.8,
-        0.8,
-        1
+        0.800000011920929,
+        0.800000011920929,
+        0
       ]
     },
     "_eulerAngles": {
@@ -659,10 +656,6 @@
       "__id__": 12
     },
     "_enabled": true,
-    "_normalMaterial": {
-      "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
-    },
-    "_grayMaterial": null,
     "duration": 0.1,
     "zoomScale": 1.2,
     "clickEvents": [
@@ -804,10 +797,10 @@
     },
     "_trs": {
       "__type__": "TypedArray",
-      "ctor": "Float64Array",
+      "ctor": "Float32Array",
       "array": [
-        -165.926,
-        -274.932,
+        -165.92599487304688,
+        -274.9320068359375,
         0,
         0,
         0,
@@ -866,9 +859,9 @@
     },
     "_trs": {
       "__type__": "TypedArray",
-      "ctor": "Float64Array",
+      "ctor": "Float32Array",
       "array": [
-        -146.173,
+        -146.17300415039062,
         0,
         0,
         0,
@@ -1034,7 +1027,7 @@
     },
     "_trs": {
       "__type__": "TypedArray",
-      "ctor": "Float64Array",
+      "ctor": "Float32Array",
       "array": [
         0,
         0,
@@ -1098,7 +1091,7 @@
     },
     "_trs": {
       "__type__": "TypedArray",
-      "ctor": "Float64Array",
+      "ctor": "Float32Array",
       "array": [
         0,
         0,
@@ -1207,7 +1200,7 @@
     },
     "_trs": {
       "__type__": "TypedArray",
-      "ctor": "Float64Array",
+      "ctor": "Float32Array",
       "array": [
         0,
         -4,
@@ -1314,7 +1307,7 @@
     },
     "_trs": {
       "__type__": "TypedArray",
-      "ctor": "Float64Array",
+      "ctor": "Float32Array",
       "array": [
         0,
         32,
@@ -1364,8 +1357,6 @@
     "_isSystemFontUsed": true,
     "_spacingX": 0,
     "_batchAsBitmap": false,
-    "_styleFlags": 0,
-    "_underlineHeight": 0,
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
@@ -1409,8 +1400,6 @@
       "__id__": 22
     },
     "_enabled": true,
-    "_normalMaterial": null,
-    "_grayMaterial": null,
     "duration": 0.1,
     "zoomScale": 1.2,
     "clickEvents": [],

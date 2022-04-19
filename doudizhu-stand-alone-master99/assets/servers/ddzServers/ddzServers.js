@@ -58,7 +58,7 @@ const ddzServers = {
       case states.GETCARD: // 摸牌阶段
         //随机通知一个摸牌
         this.landlordId = parseInt(this.playersData.players[0]);
-        this.getCard(this.playersData[this.landlordId])
+        this.getCard(this.playersData[this.landlordId]);
         break
       case states.PLAYING: // 出牌阶段
         this.landlordId = parseInt(this.playersData.players[0])//随机一个开始出牌
@@ -70,9 +70,7 @@ const ddzServers = {
         // const nextPlayer1 = winPlayer.nextPlayer
         // const nextPlayer2 = nextPlayer1.nextPlayer
         // let isWin = this.roundWinId === userId || winPlayer.isLandlord === this.playersData[userId].isLandlord
-        window.$socket.emit('gameEndNotify', 
-          this.playersData
-        )
+        window.$socket.emit('gameEndNotify', this.playersData)
         break
     }
   },
@@ -362,7 +360,7 @@ const ddzServers = {
 
     if (self.handCardOther.length == 0) {
       // 游戏结束
-      console.log('jialeliangcddi?');
+      console.log('jialeliangcddi?',self.handCardOther.length);
       this.setGameState(ddzConstants.gameState.GAMEEND)
       return
     }

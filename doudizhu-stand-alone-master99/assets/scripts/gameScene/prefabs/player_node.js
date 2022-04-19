@@ -50,7 +50,7 @@ cc.Class({
 
     //给其他玩家发牌事件
     this.node.on("push_card_event", function (event) {
-      if (this.seat_index === 0) return // 自己不再发牌
+      // if (this.seat_index === 0) return // 自己不再发牌
       this.pushCard()
     }.bind(this))
     // this.node.on("playernode_rob_state_event", function (event) {
@@ -185,7 +185,7 @@ cc.Class({
     this.card_node.active = true
     // for (var i = 0; i < 17; i++) {
       var card = cc.instantiate(this.card_prefab)
-      card.scale = 0.6
+      card.scale = 0.4
       card.parent = this.card_node
       // var height = card.height
       // card.y = (17 - 1) * 0.5 * height * 0.4 * 0.3 - height * 0.4 * 0.3 * i;

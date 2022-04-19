@@ -10,6 +10,7 @@ cc.Class({
 
   onLoad() {
     cc.director.preloadScene("hallScene")
+    // this.onButtonCilck(22,'guest_login');
   },
 
   start() {},
@@ -40,8 +41,31 @@ cc.Class({
         }.bind(this))
         break
       case 'guest_login':
-        this.wait_node.active = true
-        const count = Math.floor(Math.random() * 100000)
+        // https://d21.huoshanyouxi.com/v1/auth/register
+
+        let url = " https://d21.huoshanyouxi.com/v1/auth/register/";
+        let xhr = new XMLHttpRequest();
+        let useid = '';
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
+                var response = xhr.responseText;
+                console.log(response);
+                var responseJson = JSON.parse(response);
+                console.log('ssss',responseJson.data)
+                useid = responseJson.data['id'];
+                console.log('sdfsdf',responseJson.data['id']);
+            }
+        };
+        xhr.onerror = function(evt){
+            console.log(evt);
+        }
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send("IMEI=asdfsdgegeg");
+
+
+        // this.wait_node.active = true
+        const count = parseInt(useid)//Math.floor(Math.random() * 100000)
         const userName = `guest_${count}`
         myglobal.playerData.userId = `${count}`
         myglobal.playerData.userName = userName

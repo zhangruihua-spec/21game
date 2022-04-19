@@ -5,10 +5,10 @@ const ddzData = require('ddzData')
 cc.Class({
   extends: cc.Component,
   properties: {
-    bjMusic: {
-      type: cc.AudioClip, // 背景音乐
-      default: null,     // object's default value is null
-    },
+    // bjMusic: {
+    //   type: cc.AudioClip, // 背景音乐
+    //   default: null,     // object's default value is null
+    // },
     di_label: cc.Label,
     beishu_label: cc.Label,
     roomid_label: cc.Label,
@@ -37,7 +37,7 @@ cc.Class({
     this.btn_ready.active = ddzData.gameState < ddzConstants.gameState.GAMESTART // 准备按钮
     if (isopen_sound) {
       cc.audioEngine.stopAll()
-      cc.audioEngine.play(this.bjMusic, true)
+      // cc.audioEngine.play(this.bjMusic, true)
     }
     this.addPlayerNode(myglobal.playerData)
     this.addPlayerNode(myglobal.playerData.rootList[0])

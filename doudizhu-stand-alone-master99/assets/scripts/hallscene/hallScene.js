@@ -23,6 +23,8 @@ cc.Class({
 
     dayLab:cc.Node,
     monthLab:cc.Node,
+    //领取金币
+    bonusNode: cc.Node,
 
 
   },
@@ -30,9 +32,50 @@ cc.Class({
   // LIFE-CYCLE CALLBACKS:
 
   onLoad() {
+    let self = this;
+    let url = " https://d21.huoshanyouxi.com/v1/auth/register/";
+    self.requstData(url,function(responseJson){
+      let useid = '';
+      useid = responseJson.data['id'];
+      console.log('sdfsdf',responseJson.data['id']);
+      const count = useid
+      const userName = `guest_${count}`
+      myglobal.playerData.userId = `${count}`
+      myglobal.playerData.userName = userName
+      cc.sys.localStorage.setItem('userData', JSON.stringify(myglobal.playerData))
+      //刷新下用户的id
+      self.nickname_label.string = myglobal.playerData.userName
+    })
     this.nickname_label.string = myglobal.playerData.userName
     cc.director.preloadScene("gameScene")
+
   },
+
+  requstData(urldata,callback){
+    let url = urldata
+    let xhr = new XMLHttpRequest();
+    let useid = '';
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
+            var response = xhr.responseText;
+            // console.log(response);
+            var responseJson = JSON.parse(response);
+            // console.log('ssss',responseJson.data)
+            // useid = responseJson.data['id'];
+            // console.log('sdfsdf',responseJson.data['id']);
+            if (callback) {
+              callback(responseJson);
+            }
+        }
+    };
+    xhr.onerror = function(evt){
+        console.log(evt);
+    }
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.send("IMEI=asdfsdgegeg");
+  },
+
 
   start() {
 
@@ -58,6 +101,11 @@ cc.Class({
       case "openRankSence":
         this.rankNode.active = true;
         break
+      case "openBonusSence":
+        this.bonusNode.active = true;
+        //显示奖励界面
+        this.showBonusView();
+        break
       default:
         break
     }
@@ -75,6 +123,9 @@ cc.Class({
   },
   onCloseRank(){
     this.rankNode.active = false;
+  },
+  onCloseBonus(){
+    this.bonusNode.active = false;
   },
   onshowRank(event, customData){
     let self = this;
@@ -101,6 +152,15 @@ cc.Class({
         break;
     }
 
+  },
+  showBonusView(){
+    let self = this;
+    //先获取下
+    let url = " https://d21.huoshanyouxi.com/v1/users/"+ myglobal.playerData.userId;
+    self.requstData(url,function(responseJson){
+      console.log('qiandaoxinxi',responseJson);
+    })
+    
   }
 
 });

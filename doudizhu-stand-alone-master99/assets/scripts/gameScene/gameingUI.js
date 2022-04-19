@@ -382,7 +382,7 @@ cc.Class({
   },
   // 游戏结束
   gameEndNotify(PlayerData ) {
-    console.log('jialeliangci?');
+    console.log('jialeliangci5555?');
     var self = this;
     console.log(PlayerData )
     ddzData.gameState = ddzConstants.gameState.WAITREADY
@@ -656,6 +656,10 @@ cc.Class({
               //显示当前牌
               self.pushOneCard(carddata);
               self.showSkillNode(1,self.exchangeTimes);
+              var gameScene_script = this.node.parent.getComponent("gameScene")
+              const playerNode = gameScene_script.getUserNodeByAccount(myglobal.playerData.userId)
+              //牌面上的数字加一
+              playerNode.subtractCards(-1)
             } else {
               //出牌失败，把选择的牌归位
               // this.cards_node.map(node => node.emit("reset_card_flag"))
@@ -683,6 +687,10 @@ cc.Class({
           if (state === 1) {
             this.destoryCard(myglobal.playerData.userId, this.choose_card_data)
             this.playingUI_node.active = false;
+            //处理牌面数字
+            var gameScene_script = this.node.parent.getComponent("gameScene")
+            const playerNode = gameScene_script.getUserNodeByAccount(myglobal.playerData.userId)
+            playerNode.subtractCards(1);
           } else {
             //出牌失败，把选择的牌归位
             this.cards_node.map(node => node.emit("reset_card_flag"))

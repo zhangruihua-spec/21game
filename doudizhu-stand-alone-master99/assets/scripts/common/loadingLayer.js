@@ -19,11 +19,11 @@ var LoadingLayer = cc.Class({
     console.log('userId = ', userId)
     console.log('roomId = ', roomId)
     if (!userId) {
-      cc.director.loadScene('loginScene')
+      cc.director.loadScene('hallScene')
     } else if (!roomId) {
       cc.director.loadScene('hallScene')
     } else {
-      cc.director.loadScene('gameScene')
+      cc.director.loadScene('hallScene')
     }
   },
   resizeCallback() {

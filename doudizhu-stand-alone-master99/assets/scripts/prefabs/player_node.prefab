@@ -2278,12 +2278,8 @@
     "time_label": {
       "__id__": 48
     },
-    "robimage_sp": {
-      "__uuid__": "451654d5-673f-4270-ab3e-5bc5785f9027"
-    },
-    "robnoimage_sp": {
-      "__uuid__": "ec642347-6b71-4634-8bf4-2764a5975be7"
-    },
+    "robimage_sp": null,
+    "robnoimage_sp": null,
     "robIcon_Sp": {
       "__id__": 53
     },
@@ -2293,12 +2289,8 @@
     "masterIcon": {
       "__id__": 59
     },
-    "jiaodizhu": {
-      "__uuid__": "35b436b2-298f-4615-9e30-7532f003e0d9"
-    },
-    "buqiang": {
-      "__uuid__": "0ba9ca5d-4e94-4247-9f32-0d1d9ca2bcd7"
-    },
+    "jiaodizhu": null,
+    "buqiang": null,
     "_id": ""
   },
   {

@@ -195,7 +195,7 @@
       "array": [
         0,
         0,
-        317.8313293457031,
+        283.1903076171875,
         0,
         0,
         0,
@@ -4316,21 +4316,13 @@
       }
     ],
     "fapaiAudio": {
-      "__uuid__": "2b7b0bce-2a2c-49ac-937b-c7429a18704a"
+      "__uuid__": "79f34301-a1ac-44a4-9bca-2e736b19c49f"
     },
-    "jiaodizhuAudio": {
-      "__uuid__": "35b436b2-298f-4615-9e30-7532f003e0d9"
-    },
-    "buqiangAudio": {
-      "__uuid__": "0ba9ca5d-4e94-4247-9f32-0d1d9ca2bcd7"
-    },
-    "cardsAudio": {
-      "__uuid__": "6533952d-904d-4aa1-8663-3f08a976bf07"
-    },
+    "jiaodizhuAudio": null,
+    "buqiangAudio": null,
+    "cardsAudio": null,
     "buyaoAudio": [],
-    "chupaiAudio": {
-      "__uuid__": "2745a3eb-1220-4293-b325-8c95863e1656"
-    },
+    "chupaiAudio": null,
     "outCard_prefab": {
       "__uuid__": "8baba13e-31e9-42da-bd92-7d49dbbb6914"
     },
@@ -6771,9 +6763,6 @@
       "__id__": 2
     },
     "_enabled": true,
-    "bjMusic": {
-      "__uuid__": "b233f2fb-7e3a-48e8-a062-faf02fb6c85b"
-    },
     "di_label": {
       "__id__": 19
     },
