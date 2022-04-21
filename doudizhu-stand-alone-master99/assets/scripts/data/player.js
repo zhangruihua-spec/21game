@@ -15,7 +15,7 @@ const playerData = function () {
     roomId: '',// 游戏房间id
     seatindex: 0, // 作为id
     avatarUrl: 'avatar_1', // 头像
-    goldcount: 10000, // 金额
+    goldcount: 0, // 金额
     rootList: [
       { seatindex: 1, userId: rootId1, userName: `guest_${rootId1}`, "avatarUrl": "avatar_2", "goldcount": getRandomStr(4) },
       { seatindex: 2, userId: rootId2, userName: `guest_${rootId2}`, "avatarUrl": "avatar_3", "goldcount": getRandomStr(4) },

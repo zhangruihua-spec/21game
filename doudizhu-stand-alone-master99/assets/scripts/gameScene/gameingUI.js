@@ -292,13 +292,21 @@ cc.Class({
     // 先清理出牌区域
     // 显示可以出牌的UI
     let self = this;
-    this.playingUI_node.active = true;//展示摸牌按钮
-    this.playingUI_node.getChildByName('btn_mopai').active = true;
-    this.playingUI_node.getChildByName('btn_chupai').active = false;
-   
-    self.showSkillNode(2,self.skipTimes);
-    self.showSkillNode(3,self.randomTimes);
-    self.showSkillNode(4,self.reverseTimes);
+    var gameScene_script = this.node.parent.getComponent("gameScene")
+    const playerNode = gameScene_script.getUserNodeByAccount(myglobal.playerData.userId)
+    // playerNode.schedulerOnce(function(){
+    //   const playerNode = gameScene_script.getUserNodeByAccount(myglobal.playerData.userId)
+      // playerNode.runcount(15,15,function(){
+      // })
+      self.playingUI_node.getChildByName('btn_mopai').active = true;
+      self.playingUI_node.getChildByName('btn_chupai').active = false;
+      self.playingUI_node.active = true;//展示摸牌按钮
+
+      self.showSkillNode(2,self.skipTimes);
+      self.showSkillNode(3,self.randomTimes);
+      self.showSkillNode(4,self.reverseTimes);
+
+    //  },2);
     
   },
 
@@ -358,6 +366,7 @@ cc.Class({
 
   // 机器出牌
   rootPlayAHandNotify({ userId, cards }) {
+    let self = this;
     var gameScene_script = this.node.parent.getComponent("gameScene")
     //获取出牌区域节点
     var outCard_node = gameScene_script.getUserOutCardPosByAccount(userId)
@@ -370,7 +379,7 @@ cc.Class({
     //   card.getComponent("card").showCards(cards[i], userId)
     //   node_cards.push(card)
     // }
-    const delay = common.random(0, 5)//随机时间
+    let delay = common.random(0, 15)//随机时间
     const playerNode = gameScene_script.getUserNodeByAccount(userId)
     if (!playerNode) return
     playerNode.schedulerOnce(() => {
@@ -378,7 +387,12 @@ cc.Class({
       playerNode.subtractCards(cards.length)
       // 通知服务，下一家出牌
       window.$socket.emit('rootgetCardNotify', userId)
+      playerNode.stopCountDown()
     }, delay)
+    
+    playerNode.runcount(15,delay,function(){
+      
+    })
   },
   // 游戏结束
   gameEndNotify(PlayerData ) {
@@ -691,6 +705,8 @@ cc.Class({
             var gameScene_script = this.node.parent.getComponent("gameScene")
             const playerNode = gameScene_script.getUserNodeByAccount(myglobal.playerData.userId)
             playerNode.subtractCards(1);
+            //结束这个定时器
+            playerNode.stopCountDown();
           } else {
             //出牌失败，把选择的牌归位
             this.cards_node.map(node => node.emit("reset_card_flag"))

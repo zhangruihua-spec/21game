@@ -1,3 +1,4 @@
+import { setMaxListeners } from "events";
 import myglobal from "../../mygolbal.js"
 const ddzConstants = require('ddzConstants')
 const ddzData = require('ddzData')
@@ -30,7 +31,19 @@ cc.Class({
     buqiang: {
       type: cc.AudioClip,
       default: null
-    }
+    },
+    //头像节点
+    countDownSpr:cc.Sprite,
+    countDownSprFrames:{
+      type:cc.SpriteFrame,
+      default:[]
+    },
+    //选择的花色
+    chooseRoleFlower:cc.Sprite,
+    chooseRoleSp:{
+      type:cc.SpriteFrame,
+      default:[]
+    },
   },
 
   // LIFE-CYCLE CALLBACKS:
@@ -38,7 +51,10 @@ cc.Class({
     return cc.find('Canvas').getComponent('gameScene')
   },
   onLoad() {
+    let self = this;
     this.masterIcon.active = false
+    this._totalTime = 15;
+
     //  准备开始
     // this.node.on("player_ready_notify", () => {
     //   this.readyimage.active = true
@@ -87,6 +103,7 @@ cc.Class({
       const card = this.cardlist_node[0]
       card && (card.getChildByName('count').getComponent(cc.Label).string = 20)
     }.bind(this))
+    
 
     // this.node.on("playernode_add_three_card",function(event){
     //   var detail = event //地主的accountid
@@ -95,6 +112,11 @@ cc.Class({
 
     //   }
     // }.bind(this))
+  },
+  onEnable(){
+    let self = this;
+    
+    cc.director.on('UPDATEMYPOINT', self.updateMyPoint, self);
   },
 
   start() {
@@ -108,13 +130,22 @@ cc.Class({
     if (!CC_EDITOR) {
       ddzData.gameStateNotify.removeListener(this.gameStateHandler, this)
     }
+    cc.director.off('UPDATEMYPOINT');
     // window.$socket.remove('canrob_notify', this)
     // window.$socket.remove('gameEndNotify', this)
+  },
+  updateMyPoint(userId){
+    let self = this;
+    if (userId === myglobal.playerData.userId) {
+      self.globalcount_label.string = myglobal.playerData.goldcount;
+    }
+    
   },
   //这里初始化房间内位置节点信息(自己和其他玩家)
   //data玩家节点数据
   //index玩家在房间的位置索引
   init_data(data, index) {
+    let self = this;
     //data:{"userId":"2117836","userName":"tiny543","avatarUrl":"http://xxx","goldcount":1000}
     this.userId = data.userId
     // this.account_label.string = data.accountid
@@ -122,15 +153,24 @@ cc.Class({
     this.globalcount_label.string = data.goldcount
     this.cardlist_node = []
     this.seat_index = index
+
+    if (this.userId === myglobal.playerData.userId) {
+      let roleindex =cc.sys.localStorage.getItem('roleData')
+      self.chooseRoleFlower.spriteFrame = self.chooseRoleSp[roleindex-1];
+      self.chooseRoleFlower.node.active = true;
+    }
+    
+
+
     //这里根据传入的avarter来获取本地图像
-    // var head_image_path = "UI/headimage/" + data.avatarUrl
-    // cc.loader.loadRes(head_image_path, cc.SpriteFrame, function (err, spriteFrame) {
-    //   if (err) {
-    //     console.log(err.message || err);
-    //     return;
-    //   }
-    //   // this.headImage.spriteFrame = spriteFrame;
-    // }.bind(this));
+    var head_image_path = "UI/headimage/" + data.avatarUrl
+    cc.loader.loadRes(head_image_path, cc.SpriteFrame, function (err, spriteFrame) {
+      if (err) {
+        console.log(err.message || err);
+        return;
+      }
+      this.headImage.spriteFrame = spriteFrame;
+    }.bind(this));
     if (!index) {
       this.readyimage.active = false
       return
@@ -168,7 +208,7 @@ cc.Class({
   schedulerOnce(fn, seconds = common.random(0, 5)) {
     this.count = 5;
     this.time_label.string = this.count
-    this.qiangdidzhu_node.active = true
+    // this.qiangdidzhu_node.active = true
     const callback = function () {
       if (!this.count || (5 - seconds) === this.count) {
         // 在第六次执行回调时取消这个计时器
@@ -180,6 +220,45 @@ cc.Class({
     }
     this.schedule(callback, 1, seconds)
   },
+  //倒计时图
+  runcount(leftTime,stopTime,endCountDownCall){
+        let self = this;
+        
+        self._totalTime = leftTime;
+        self._curCountDownTime = this._totalTime - leftTime;
+        self._endCountDownCall = endCountDownCall;
+        self.countDownSpr.node.active = true;
+        self.countDownSpr.spriteFrame = self.countDownSprFrames[0];
+
+        self.schedule(self._countDownCall, 0.1, cc.macro.REPEAT_FOREVER, 0);
+
+  },
+  _countDownCall(){
+    this._curCountDownTime += 0.1;
+        if (this._curCountDownTime >= this._totalTime) {
+            this.stopCountDown();
+            if (this._endCountDownCall) {
+                this._endCountDownCall();
+            }
+        } else {
+            let per = this._curCountDownTime / this._totalTime;
+            this.countDownSpr.fillRange = 1 - per;
+
+            let leftTimes = this._totalTime - this._curCountDownTime;
+            if (leftTimes >= 5 && leftTimes < 10) {
+                this.countDownSpr.spriteFrame = this.countDownSprFrames[1];
+            } else if (leftTimes < 5) {
+                this.countDownSpr.spriteFrame = this.countDownSprFrames[2];
+            }
+        }
+  },
+  stopCountDown() {
+    let self = this;
+    self.unschedule(self._countDownCall);
+    self.countDownSpr.node.stopAllActions();
+    self.countDownSpr.node.active = false;
+  },
+
   // 给机器发牌
   pushCard() {
     this.card_node.active = true

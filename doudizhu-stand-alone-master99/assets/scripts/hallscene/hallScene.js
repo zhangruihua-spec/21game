@@ -26,7 +26,13 @@ cc.Class({
     //领取金币
     bonusNode: cc.Node,
 
-
+    bonusBigNode:cc.Node,
+    bounsSmallNode:cc.Node,
+    //领取奖励节点
+    bonusBigPre: cc.Prefab,
+    bonusSmallPre: cc.Prefab,
+    //领取的point
+    bonusPointLab:cc.Label,
   },
 
   // LIFE-CYCLE CALLBACKS:
@@ -34,15 +40,18 @@ cc.Class({
   onLoad() {
     let self = this;
     let url = " https://d21.huoshanyouxi.com/v1/auth/register/";
-    self.requstData(url,function(responseJson){
+    self.requstData(url,'POST',1,function(responseJson){
       let useid = '';
       useid = responseJson.data['id'];
-      console.log('sdfsdf',responseJson.data['id']);
+      // console.log('sdfsdf',responseJson.data['id']);
       const count = useid
       const userName = `guest_${count}`
       myglobal.playerData.userId = `${count}`
       myglobal.playerData.userName = userName
       cc.sys.localStorage.setItem('userData', JSON.stringify(myglobal.playerData))
+      //存一下token_type token
+      cc.sys.localStorage.setItem('token', responseJson.data['token'])
+      cc.sys.localStorage.setItem('token_type', responseJson.data['token_type'])
       //刷新下用户的id
       self.nickname_label.string = myglobal.playerData.userName
     })
@@ -51,29 +60,54 @@ cc.Class({
 
   },
 
-  requstData(urldata,callback){
-    let url = urldata
-    let xhr = new XMLHttpRequest();
-    let useid = '';
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
-            var response = xhr.responseText;
-            // console.log(response);
-            var responseJson = JSON.parse(response);
-            // console.log('ssss',responseJson.data)
-            // useid = responseJson.data['id'];
-            // console.log('sdfsdf',responseJson.data['id']);
-            if (callback) {
-              callback(responseJson);
-            }
+  onEnable(){
+    let self = this;
+    cc.director.on('UPDATAPOINT', self.updataPoint, self);
+  },
+  onDisable() {
+    cc.director.off('UPDATAPOINT');
+  },
+  updataPoint(){
+    let self = this;
+    //先获取下
+    let url = " https://d21.huoshanyouxi.com/v1/users/"+ myglobal.playerData.userId;
+    self.requstData(url,'GET',2,function(responseJson){
+      console.log('qiandaoxinxi',responseJson);
+      let point = responseJson["point"];
+      //刷新先显示
+      self.bonusPointLab.string = point;
+      myglobal.playerData.goldcount = point;
+      
+    })
+  },
+
+  requstData(urldata,msgType,msgData,callback){
+
+    var data = new FormData();
+
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = false;
+
+    xhr.addEventListener("readystatechange", function() {
+      if(this.readyState === 4) {
+        console.log(this.responseText);
+        var response = xhr.responseText;
+        var responseJson = JSON.parse(response);
+        if (callback) {
+          callback(responseJson);
         }
-    };
-    xhr.onerror = function(evt){
-        console.log(evt);
+      }
+    });
+
+    xhr.open(msgType, urldata);
+    if (msgData == 1) {
+      xhr.setRequestHeader("IMEI", "werwrerdwerwer");
+    }else if(msgData == 2){
+      let token_type = cc.sys.localStorage.getItem('token_type')
+      let token = cc.sys.localStorage.getItem('token')
+      xhr.setRequestHeader("Authorization", token_type + ' ' + token);
     }
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr.send("IMEI=asdfsdgegeg");
+    xhr.send(data);
   },
 
 
@@ -157,8 +191,30 @@ cc.Class({
     let self = this;
     //先获取下
     let url = " https://d21.huoshanyouxi.com/v1/users/"+ myglobal.playerData.userId;
-    self.requstData(url,function(responseJson){
+    self.requstData(url,'GET',2,function(responseJson){
       console.log('qiandaoxinxi',responseJson);
+      let awardData = responseJson["award_list"];
+      let point = responseJson["point"];
+      //刷新先显示
+      self.bonusPointLab.string = point;
+      //显示自己本来的金额
+      myglobal.playerData.goldcount = point;
+
+      //刷新先显示
+      self.bonusBigNode.removeAllChildren()
+      self.bounsSmallNode.removeAllChildren()
+      for (let index = 0; index < awardData.length; index++) {
+        if (index < 3) {
+          let bonusBigPre =cc.instantiate(self.bonusBigPre);
+          bonusBigPre.parent = self.bonusBigNode;
+          bonusBigPre.getComponent('bonusItem').initData(awardData[index])
+        } else {
+          let bonusSmallPre =cc.instantiate(self.bonusSmallPre);
+          bonusSmallPre.parent = self.bounsSmallNode;
+          bonusSmallPre.getComponent('bonusItem').initData(awardData[index])
+        }
+      }
+      
     })
     
   }

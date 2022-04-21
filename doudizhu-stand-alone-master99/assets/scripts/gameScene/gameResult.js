@@ -15,21 +15,6 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        // foo: {
-        //     // ATTRIBUTES:
-        //     default: null,        // The default value will be used only when the component attaching
-        //                           // to a node for the first time
-        //     type: cc.SpriteFrame, // optional, default is typeof default
-        //     serializable: true,   // optional, default is true
-        // },
-        // bar: {
-        //     get () {
-        //         return this._bar;
-        //     },
-        //     set (value) {
-        //         this._bar = value;
-        //     }
-        // },
         winbg:cc.Sprite,
         winsp:cc.Sprite,
         myWinBg:cc.Sprite,
@@ -81,7 +66,9 @@ cc.Class({
         }
         let playerGetScore = [];
         let allScore = 0;
-        let baseScore = 1;
+    
+        let baseScore = myglobal.playerData.bottom;
+        console.log('youxidifen',baseScore);
         //首先计算下每个玩家的得分
         for (let index = 0; index < palyerData.players.length; index++) {
             playerGetScore.push(palyerData[palyerData.players[index]].score);
@@ -115,7 +102,9 @@ cc.Class({
             self.mycoinLab.string = '' + (myGetScore  * baseScore) ;
             self.mynameLab.node.color = cc.color().fromHEX("#cdfaff");
         }
-
+        //发送给服务器处理自己的得分
+        
+        self.updateMyCoin(myGetScore * baseScore);
         //自己的得分列表
         for (let index = 0; index <  palyerData[parseInt(myglobal.playerData.userId)].scoreArray.length; index++) {
             const element = palyerData[parseInt(myglobal.playerData.userId)].scoreArray[index];
@@ -154,6 +143,37 @@ cc.Class({
         self.node.removeFromParent();
         self.node.destroy();
         
+    },
+    updateMyCoin(dataNum){
+      
+
+        var data = "point="+dataNum;
+
+        var xhr = new XMLHttpRequest();
+        xhr.withCredentials = false;
+
+        xhr.addEventListener("readystatechange", function() {
+        if(this.readyState === 4) {
+            console.log(this.responseText);
+            let temp = parseInt( myglobal.playerData.goldcount)
+            temp+= parseInt(dataNum);
+            myglobal.playerData.goldcount = temp;
+            console.log('sdfsdfsdf',myglobal.playerData.goldcount);
+            //刷新下自己的分数
+            cc.director.emit('UPDATEMYPOINT',myglobal.playerData.userId);
+            
+        }
+        });
+        xhr.open("POST", "https://d21.huoshanyouxi.com/v1/users/" + myglobal.playerData.userId + "/point");
+        let token_type = cc.sys.localStorage.getItem('token_type')
+        let token = cc.sys.localStorage.getItem('token')
+        xhr.setRequestHeader("Authorization", token_type + ' ' + token);
+
+      
+        // xhr.setRequestHeader("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODE5NjEwNjQsImlzcyI6InBoYWxjb24tand0LWF1dGgiLCJpZCI6IjEwMDAzIiwiaWF0IjoxNjUwNDI1MDY0fQ.EI8W2DenYzBdN_-PDHKrA0taKB5fXBbLqw5ZALVw1Fg");
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        xhr.send(data);
     }
 
     // update (dt) {},

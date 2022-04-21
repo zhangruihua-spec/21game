@@ -44,7 +44,7 @@ cc.Class({
         console.log('dangewanjiddda',allScore);
         console.log(data);
         //计算自己的得分
-        let base = 1;
+        let base =  myglobal.playerData.bottom;;
         let userGetScore = 4 * data.score  - allScore;
         console.log('meigewanjiadefen',userGetScore)
         self.nameLab.string = 'guest_' + data.userId;
