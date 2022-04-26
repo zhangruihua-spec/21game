@@ -14,19 +14,24 @@ cc.Class({
     properties: {
         card_prefab: cc.Prefab,
         outcardNode:cc.Node,
-        bgNode:cc.Node
+        bgNode:cc.Node,
+        cardNumLabel:cc.Label
        
     },
    
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-       
     },
 
     initdata() {
         this.outcardsData = [];
     },
+    showCardNode(){
+        let self = this;
+        self.bgNode.active = true;
+    },
+
 
     start () {
 
@@ -69,8 +74,14 @@ cc.Class({
             let newSPx = (cardw * (outcardNum - maxcardNum )) / (outcardNum - 1 );
            
             self.outcardNode.getComponent(cc.Layout).spacingX = - (newSPx-2);
+        }else{
+            self.outcardNode.getComponent(cc.Layout).spacingX =2
         }
         self.outcardNode.getComponent(cc.Layout).updateLayout();
+    },
+    updateHandCardNum(num){
+        let self = this;
+        self.cardNumLabel.string = ''+ num
     },
 
     resetData () {
@@ -79,6 +90,7 @@ cc.Class({
         if (this.outcardNode) {
             this.outcardNode.removeAllChildren();
         }
+        self.bgNode.active = false;
     },
     //加上一张牌之后计算 得分
     calcDeskScore(){
@@ -96,7 +108,11 @@ cc.Class({
         }
 
         let calcCardScore = [];
-        calcCardScore.push(self.outcardsData[outlength-1].val);//先传最后一张牌
+        let lastCardValu = self.outcardsData[outlength-1].val;
+        if (lastCardValu > 13) {
+            lastCardValu  =  lastCardValu - 13;
+        }
+        calcCardScore.push(lastCardValu);//先传最后一张牌
         for (let index = 0; index < outlength - 1; index++) {
             let val = self.outcardsData[outlength - 2 - index].val
             if (val > 13) {

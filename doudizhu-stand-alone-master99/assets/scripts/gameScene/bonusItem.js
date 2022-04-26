@@ -55,7 +55,7 @@ cc.Class({
         var data = "";
 
         var xhr = new XMLHttpRequest();
-        xhr.withCredentials = false;
+        // xhr.withCredentials = false;
 
         xhr.addEventListener("readystatechange", function() {
         if(this.readyState === 4) {

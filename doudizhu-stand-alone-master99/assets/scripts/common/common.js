@@ -1,6 +1,6 @@
-const audioManager = require('audioManager');
+let audioManager = require('audioManager');
 
-const common = {
+let common = {
   // 声音管理
   audio: audioManager,
   // 获取指定位数的随机数

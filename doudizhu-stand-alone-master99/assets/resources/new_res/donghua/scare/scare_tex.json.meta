@@ -1,0 +1,7 @@
+{
+  "ver": "1.0.0",
+  "uuid": "fb46d849-707f-488f-bd3a-884489b15fa8",
+  "atlasJson": "{\"width\":1024,\"height\":512,\"name\":\"scare\",\"imagePath\":\"scare_tex.png\",\"SubTexture\":[{\"width\":630,\"y\":163,\"height\":160,\"name\":\"bg_win@2x\",\"x\":1},{\"width\":630,\"y\":1,\"height\":160,\"name\":\"bg_lose@2x\",\"x\":1},{\"width\":408,\"y\":325,\"height\":92,\"name\":\"img_scare@2x_46\",\"x\":1}]}",
+  "texture": "512d1222-f4d2-4073-a944-364adc834b29",
+  "subMetas": {}
+}

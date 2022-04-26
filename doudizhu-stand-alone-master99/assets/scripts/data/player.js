@@ -1,4 +1,4 @@
-const getRandomStr = function (count) {
+let getRandomStr = function (count) {
   var str = '';
   for (var i = 0; i < count; i++) {
     str += Math.floor(Math.random() * 10);
@@ -6,9 +6,9 @@ const getRandomStr = function (count) {
   return str;
 };
 
-const playerData = function () {
-  const userData = JSON.parse(cc.sys.localStorage.getItem('userData'))
-  const [rootId1, rootId2, rootId3] = [getRandomStr(5), getRandomStr(5), getRandomStr(5)]
+  let playerData = function () {
+  let userData = JSON.parse(cc.sys.localStorage.getItem('userData'))
+  let [rootId1, rootId2, rootId3] = [getRandomStr(5), getRandomStr(5), getRandomStr(5)]
   var that = userData || {
     userId: '', // 用户id
     userName: '', // 用户名称，guest_ 开头

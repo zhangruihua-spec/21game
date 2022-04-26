@@ -1,11 +1,11 @@
 import myglobal from './mygolbal.js'
 
-const common = require('common')
-const ddzData = require('ddzData')
-const ddzServers = require('ddzServers')
-const gameRule = require('gameRule')
+let common = require('common')
+let ddzData = require('ddzData')
+let ddzServers = require('ddzServers')
+let gameRule = require('gameRule')
 
-const start = cc.Class({
+let start = cc.Class({
   extends: cc.Component,
   onLoad() {
     window.myglobal = window.myglobal || myglobal

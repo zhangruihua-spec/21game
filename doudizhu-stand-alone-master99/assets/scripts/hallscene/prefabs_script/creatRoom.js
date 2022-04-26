@@ -34,15 +34,15 @@ cc.Class({
 
     //判断是否符合条件
     let roomMix = [5,50,250,500];
-    if ( myglobal.playerData.goldcount < roomMix[parseInt(value)-1]) {
-      this.tipsLabel.string = "Current amount is less than the minimum admission requirement!"
-      setTimeout(function () {
-        this.tipsLabel.string = ""
-      }.bind(this), 2000);
-      return;
-    }
-    const { bottom, rate } = defines.jdRoomConfig['rate_' + value]
-    const roomId = `${rate}_${bottom}_${Math.floor(Math.random() * 1000)}`
+    // if ( myglobal.playerData.goldcount < roomMix[parseInt(value)-1]) {
+    //   this.tipsLabel.string = "Current amount is less than the minimum admission requirement!"
+    //   setTimeout(function () {
+    //     this.tipsLabel.string = ""
+    //   }.bind(this), 2000);
+    //   return;
+    // }
+    let { bottom, rate } = defines.jdRoomConfig['rate_' + value]
+    let roomId = `${rate}_${bottom}_${Math.floor(Math.random() * 1000)}`
     myglobal.playerData.bottom = bottom
     myglobal.playerData.rate = rate
     myglobal.playerData.roomId = roomId

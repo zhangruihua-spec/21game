@@ -1,6 +1,6 @@
 import myglobal from "../mygolbal.js"
-const ddzConstants = require('ddzConstants')
-const ddzData = require('ddzData')
+let ddzConstants = require('ddzConstants')
+let ddzData = require('ddzData')
 
 cc.Class({
   extends: cc.Component,
@@ -25,8 +25,8 @@ cc.Class({
       ddzData.gameStateNotify.addListener(this.gameStateHandler, this)
     }
     this.playerNodeList = []
-    const { roomId } = myglobal.playerData
-    const [rate, bottom] = roomId.split('_')
+    let { roomId } = myglobal.playerData
+    let [rate, bottom] = roomId.split('_')
     myglobal.playerData.rate = rate
     myglobal.playerData.bottom = bottom
 

@@ -1,0 +1,7 @@
+{
+  "ver": "1.0.0",
+  "uuid": "0d787adb-7bb6-4622-bd2a-9fd69252f429",
+  "atlasJson": "{\"width\":256,\"height\":128,\"name\":\"jianfen\",\"imagePath\":\"jianfen_tex.png\",\"SubTexture\":[{\"width\":70,\"y\":1,\"height\":75,\"name\":\"neiguang\",\"x\":1},{\"width\":70,\"y\":1,\"height\":74,\"name\":\"liehen\",\"x\":145},{\"width\":70,\"y\":1,\"height\":75,\"name\":\"bg\",\"x\":73},{\"width\":11,\"y\":1,\"height\":10,\"name\":\"06\",\"x\":217},{\"width\":8,\"y\":1,\"height\":12,\"name\":\"05\",\"x\":245},{\"width\":10,\"y\":13,\"height\":7,\"name\":\"04\",\"x\":217},{\"width\":7,\"y\":22,\"height\":7,\"name\":\"03\",\"x\":217},{\"width\":13,\"y\":1,\"height\":8,\"name\":\"02\",\"x\":230},{\"width\":8,\"y\":11,\"height\":11,\"name\":\"01\",\"x\":230}]}",
+  "texture": "d5e0269b-7712-4e85-893d-f06dd5c6f235",
+  "subMetas": {}
+}

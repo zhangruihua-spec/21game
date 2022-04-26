@@ -1,7 +1,7 @@
 import { setMaxListeners } from "events";
 import myglobal from "../../mygolbal.js"
-const ddzConstants = require('ddzConstants')
-const ddzData = require('ddzData')
+let ddzConstants = require('ddzConstants')
+let ddzData = require('ddzData')
 cc.Class({
   extends: cc.Component,
 
@@ -67,6 +67,7 @@ cc.Class({
     //给其他玩家发牌事件
     this.node.on("push_card_event", function (event) {
       // if (this.seat_index === 0) return // 自己不再发牌
+      console.log('给其他玩家发牌事件');
       this.pushCard()
     }.bind(this))
     // this.node.on("playernode_rob_state_event", function (event) {
@@ -261,6 +262,8 @@ cc.Class({
 
   // 给机器发牌
   pushCard() {
+    this.card_node.removeAllChildren();
+    this.cardlist_node = [];
     this.card_node.active = true
     // for (var i = 0; i < 17; i++) {
       var card = cc.instantiate(this.card_prefab)
@@ -286,9 +289,10 @@ cc.Class({
    */
   subtractCards(len = 0) {
     if (!this.cardlist_node.length) return
-    const countLabel = this.cardlist_node[0].getChildByName('count').getComponent(cc.Label)
-    countLabel.string -= len
-    !Number(countLabel.string) && this.card_node.removeAllChildren()
+    let  countLabel = this.cardlist_node[0].getChildByName('count').getComponent(cc.Label)
+    let countLabelnum = parseInt(countLabel.string);
+    countLabel.string = "" + (countLabelnum -len);
+    // !Number(countLabel.string) && this.card_node.removeAllChildren()
   },
   // 游戏结束显示剩余牌型
   // gameEndNotify({otherPlayerCards}) {

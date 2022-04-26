@@ -1,0 +1,7 @@
+{
+  "ver": "1.0.0",
+  "uuid": "2984f1c7-6a7c-4894-87fa-16ab5dd2b984",
+  "atlasJson": "{\"width\":512,\"height\":1024,\"name\":\"smile\",\"imagePath\":\"smile_tex.png\",\"SubTexture\":[{\"frameHeight\":500,\"y\":1,\"frameWidth\":500,\"frameX\":-16,\"width\":467,\"frameY\":-17,\"height\":464,\"name\":\"guang\",\"x\":1},{\"width\":58,\"y\":467,\"height\":69,\"name\":\"2x\",\"x\":1},{\"width\":22,\"y\":69,\"height\":23,\"name\":\"yuandian1\",\"x\":470},{\"width\":28,\"y\":38,\"height\":29,\"name\":\"yuandian2\",\"x\":470},{\"width\":35,\"y\":1,\"height\":35,\"name\":\"smile@2x_29\",\"x\":470}]}",
+  "texture": "56683e06-ec7e-4e97-8aa0-a8d9d6b36049",
+  "subMetas": {}
+}

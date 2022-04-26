@@ -1,6 +1,6 @@
 import myglobal from "../mygolbal.js"
-const ddzConstants = require('ddzConstants')
-const ddzData = require('ddzData')
+let ddzConstants = require('ddzConstants')
+let ddzData = require('ddzData')
 
 
 cc.Class({
@@ -22,6 +22,8 @@ cc.Class({
     result_prefab: cc.Prefab, // 结算
 
     chooseThree_prefab: cc.Prefab, // 特殊技能，三张中选一张
+    startNode:cc.Node,
+    cardBackGroudNd:cc.Node,//发牌点
 
     skillNode: cc.Node, // 跳过 node
     skillSp: cc.Sprite, // 跳过 bg
@@ -86,8 +88,9 @@ cc.Class({
     this.push_card_tmp = []
     // 提示牌型
     this.promptCount = 0
+    //当前已经发完拍了
+    this.finishSendCard = 0;
   
-
     //注册监听一个选择牌消息 
     this.node.on("choose_card_event", function (cardData) {
       this.choose_card_data.push(cardData)
@@ -170,7 +173,7 @@ cc.Class({
     let self = this;
     if (data) {
       let chooseNode = cc.instantiate(self.chooseThree_prefab)
-      chooseNode.parent = this.node;
+      chooseNode.parent = self.node;
       chooseNode.getComponent('chooseCard').initCardData(data);
     }
   },
@@ -196,42 +199,81 @@ cc.Class({
       this.push_card_tmp = []
       this.cardsNode.removeAllChildren()
       this.bottom_card_pos_node.removeAllChildren()
+      this.playingUI_node.active = false;//展示出牌按钮
+
+      var gameScene_script = this.node.parent.getComponent("gameScene")
+      const playerNode = gameScene_script.getUserNodeByAccount(myglobal.playerData.userId)
+      playerNode.stopCountDown();
+      //重置游戏次数
+      if ( cc.sys.localStorage.getItem('roleData') == 2) {
+        this.skipTimes = 3;
+      }else if(cc.sys.localStorage.getItem('roleData') == 4 ){
+        this.reverseTimes = 2;
+      }else if(cc.sys.localStorage.getItem('roleData') == 3 ){
+        this.randomTimes = 3;
+      }else if(cc.sys.localStorage.getItem('roleData') == 1 ){
+        this.exchangeTimes = 2;
+      }
+
     }
   },
+    //跑洗牌动画
+    runShuffleCardsAct(endCall) {
+      let self = this;
+      self.startNode.position = cc.v2(0, 0);
+      self.cardBackGroudNd.position = cc.v2(-400, 17);
+      console.log('weizhixinxi', self.cardBackGroudNd.position);
+      self.startNode.scale = 1;
+      self.startNode.active = true;
+      self.startNode.stopAllActions();
+      let armatureDisplay = self.startNode.getComponent(dragonBones.ArmatureDisplay);
+      if (armatureDisplay) {
+          armatureDisplay.playAnimation('newAnimation', 1);
+          armatureDisplay.once(dragonBones.EventObject.COMPLETE, function () {
+              if (typeof (endCall) == "function") {
+                let actT = 0.25;
+                self.startNode.runAction(cc.sequence(
+                    cc.spawn(
+                        cc.moveTo(actT, self.cardBackGroudNd.position),
+                        cc.scaleTo(actT, 0.53)
+                    ),
+                    cc.callFunc(function () {
+                      self.startNode.active = false;
+                        if (endCall) {
+                            endCall();
+                        }
+                    })
+                ));
+              }
+          }, armatureDisplay);
+      }
+  },
   pushCardNotify(data) {
-    this.card_data = data
-    this.cur_index_card = data.length - 1
-    this.pushCard(data)
-    //左边移动定时器
-    this.scheduleOnce(this._runactive_pushcard.bind(this), 0.3)
-    this.node.parent.emit("pushcard_other_event")
+    //先播放洗牌动画
+    let self = this;
+    self.playingUI_node.active = false;//展示出牌按钮
+    self.runShuffleCardsAct(function(){
+      self.card_data = data
+      self.cur_index_card = data.length - 1
+      self.pushCard(data)
+      //左边移动定时器
+      self.scheduleOnce(self._runactive_pushcard.bind(self), 0.3)
+      console.log('pushcard_other_event');
+      self.node.parent.emit("pushcard_other_event")
+      self.finishSendCard = 1
+      self.playingUI_node.active = true;//展示出牌按钮
+      self.outcardnode.getComponent('gameOutCardUI').showCardNode();
+      self.outcardnode.getComponent('gameOutCardUI').updateHandCardNum(24);
+    })
+
+    
   },
   //处理发牌的效果
   _runactive_pushcard() {
     if (this.cur_index_card < 0) {
-      // console.log("pushcard end")
-      //发牌动画完成，显示抢地主按钮
-      // this.fapai_end = true
-      // if (this.rob_player_accountid === myglobal.playerData.userId) {
-      //   this.robUI.active = true
-      //   this.customSchedulerOnce()
-      // }
-      // if (isopen_sound) {
-      //   cc.audioEngine.stop(this.fapai_audioID)
-      // }
-      //通知gamescene节点，倒计时
-      // var sendevent = this.rob_player_accountid
-      // this.node.parent.emit("canrob_event", sendevent)
       return
     }
-    //原有逻辑  
-    // var move_node = this.cards_node[this.cur_index_card]
-    // move_node.active = true
-    // var newx = move_node.x + (this.card_width * 0.4*this.cur_index_card) - (this.card_width * 0.4)
-    // var action = cc.moveTo(0.1, cc.v2(newx, -250));
-    // move_node.runAction(action)
-    // this.cur_index_card--
-    // this.scheduleOnce(this._runactive_pushcard.bind(this),0.3)
+
 
     var move_node = this.cards_node[this.cards_node.length - this.cur_index_card - 1]
     move_node.active = true
@@ -248,37 +290,20 @@ cc.Class({
     this.scheduleOnce(this._runactive_pushcard.bind(this), 0.3)
   },
 
-  //开启一个定时器
-  // customSchedulerOnce() {
-  //   this.count = 10;
-  //   const callback = function () {
-  //     if (!this.robUI.active) return
-  //     if (!this.count) {
-  //       // 在第六次执行回调时取消这个计时器
-  //       this.robUI.active = false
-  //       this.unschedule(callback)
-  //       window.$socket.emit('canrob_state_notify', {
-  //         userId: myglobal.playerData.userId,
-  //         state: qian_state.buqiang,
-  //       })
-  //       common.audio.PlayEffect(this.buqiangAudio)
-  //     }
-  //     this.timeLabel.string = --this.count
-  //   }
-  //   this.schedule(callback, 1, 10)
-  // },
   /**
    * @description 出牌
    */
-  selfPlayAHandNotify() {
+  selfPlayAHandNotify(callback) {
     console.log('玩家出牌提示')
-   
+    this.myOutCardCallBack = callback;
     this.promptCount = 0
     // this.promptList = promptList
     // 先清理出牌区域
     // this.clearOutZone(myglobal.playerData.userId)
     // 显示可以出牌的UI
-    this.playingUI_node.active = true;//展示出牌按钮
+    if (this.finishSendCard ==1) {
+      this.playingUI_node.active = true;//展示出牌按钮
+    }
     this.playingUI_node.getChildByName('btn_chupai').active = true;
     this.playingUI_node.getChildByName('btn_mopai').active = false;
     //通知下一个玩家摸牌
@@ -294,19 +319,19 @@ cc.Class({
     let self = this;
     var gameScene_script = this.node.parent.getComponent("gameScene")
     const playerNode = gameScene_script.getUserNodeByAccount(myglobal.playerData.userId)
-    // playerNode.schedulerOnce(function(){
-    //   const playerNode = gameScene_script.getUserNodeByAccount(myglobal.playerData.userId)
-      // playerNode.runcount(15,15,function(){
-      // })
-      self.playingUI_node.getChildByName('btn_mopai').active = true;
-      self.playingUI_node.getChildByName('btn_chupai').active = false;
-      self.playingUI_node.active = true;//展示摸牌按钮
-
-      self.showSkillNode(2,self.skipTimes);
-      self.showSkillNode(3,self.randomTimes);
-      self.showSkillNode(4,self.reverseTimes);
-
-    //  },2);
+  
+    self.playingUI_node.getChildByName('btn_mopai').active = true;
+    self.playingUI_node.getChildByName('btn_chupai').active = false;
+    if (this.finishSendCard ==1) {
+      this.playingUI_node.active = true;//展示出牌按钮
+      console.log('zijimopai');
+      playerNode.runcount(15,15,function(){
+      })
+    }
+    self.showSkillNode(2,self.skipTimes);
+    self.showSkillNode(3,self.randomTimes);
+    self.showSkillNode(4,self.reverseTimes);
+ 
     
   },
 
@@ -348,7 +373,7 @@ cc.Class({
    /**
    * @description 机器人摸牌
    */
-    rootGetAHandNotify({ userId, cards }) {
+    rootGetAHandNotify({ userId, cards,handCardNum }) {
       var gameScene_script = this.node.parent.getComponent("gameScene")
       const playerNode = gameScene_script.getUserNodeByAccount(userId)
       this.playingUI_node.active = false;
@@ -361,11 +386,13 @@ cc.Class({
       this.playingUI_node.getChildByName('btn_exchange').active = false;
       this.skillSp.spriteFrame = this.timesBg[1];
       this.skillLab.node.color = cc.color().fromHEX("#414347");
+      //桌面牌显示
+      this.outcardnode.getComponent('gameOutCardUI').updateHandCardNum(handCardNum);
     },
   
 
   // 机器出牌
-  rootPlayAHandNotify({ userId, cards }) {
+  rootPlayAHandNotify({ userId, cards },callFunc) {
     let self = this;
     var gameScene_script = this.node.parent.getComponent("gameScene")
     //获取出牌区域节点
@@ -384,20 +411,27 @@ cc.Class({
     if (!playerNode) return
     playerNode.schedulerOnce(() => {
       this.appendOtherCardsToOutZone(outCard_node, cards[0], userId)
-      playerNode.subtractCards(cards.length)
-      // 通知服务，下一家出牌
-      window.$socket.emit('rootgetCardNotify', userId)
+      const playerNode = gameScene_script.getUserNodeByAccount(userId)
+      playerNode.subtractCards(1)
       playerNode.stopCountDown()
+      callFunc && callFunc({
+        state: 1
+      });
+      window.$socket.emit('rootgetCardNotify', userId)
     }, delay)
-    
+
+   
     playerNode.runcount(15,delay,function(){
       
     })
+    
   },
   // 游戏结束
   gameEndNotify(PlayerData ) {
     console.log('jialeliangci5555?');
     var self = this;
+    self.finishSendCard = 0;
+    this.playingUI_node.active = false;
     console.log(PlayerData )
     ddzData.gameState = ddzConstants.gameState.WAITREADY
     self.outcardnode.getComponent('gameOutCardUI').resetData();
@@ -410,7 +444,7 @@ cc.Class({
         const element = self.scoreFaceNode[index];
         element.removeAllChildren();
     }
-    
+   
   },
   //对牌排序
   sortCard() {
@@ -663,7 +697,7 @@ cc.Class({
       case "getcard"://摸一张牌上来
           window.$socket.emit('getCardNotify', {
             userId: myglobal.playerData.userId,
-          }, ({carddata}) => {
+          }, ({carddata,cardNum}) => {
             if (carddata) {
               // this.destoryCard(myglobal.playerData.userId, this.choose_card_data)
               this.playingUI_node.active = false;
@@ -673,7 +707,10 @@ cc.Class({
               var gameScene_script = this.node.parent.getComponent("gameScene")
               const playerNode = gameScene_script.getUserNodeByAccount(myglobal.playerData.userId)
               //牌面上的数字加一
-              playerNode.subtractCards(-1)
+              playerNode.subtractCards(-1);
+              //刷新桌面上的牌
+              console.log('huitiaode paishuliang',cardNum);
+              self.outcardnode.getComponent('gameOutCardUI').updateHandCardNum(cardNum);
             } else {
               //出牌失败，把选择的牌归位
               // this.cards_node.map(node => node.emit("reset_card_flag"))
@@ -707,6 +744,8 @@ cc.Class({
             playerNode.subtractCards(1);
             //结束这个定时器
             playerNode.stopCountDown();
+
+            this.myOutCardCallBack;
           } else {
             //出牌失败，把选择的牌归位
             this.cards_node.map(node => node.emit("reset_card_flag"))
@@ -726,6 +765,10 @@ cc.Class({
           // this.skillLab.node.color = cc.color().fromHEX("#414347");
           // this.skillSp.spriteFrame = this.timesBg[1];
           // this.skillNode.active =  true;
+          var gameScene_script = this.node.parent.getComponent("gameScene")
+          const playerNode = gameScene_script.getUserNodeByAccount(myglobal.playerData.userId)
+          //结束这个定时器
+          playerNode.stopCountDown();
           break;
       case "randomCard":   //随机从牌堆的三张中选一张出来s
           this.randomTimes -= 1;
@@ -738,6 +781,10 @@ cc.Class({
           window.$socket.emit('playSkipNotify',myglobal.playerData.userId);
           this.reverseTimes -= 1;
           this.setSkillState( this.reverseTimes);
+          var gameScene_script = this.node.parent.getComponent("gameScene")
+          let playerNodemy = gameScene_script.getUserNodeByAccount(myglobal.playerData.userId)
+          //结束这个定时器
+          playerNodemy.stopCountDown();
           //再反转
           break;
       case "exchange":   //交换手牌和暗牌堆里面的  == 技能1
@@ -755,7 +802,7 @@ cc.Class({
             if (state === 1) {
               let skill = 1;
               this.destoryCard(myglobal.playerData.userId, this.choose_card_data,skill)
-              // this.playingUI_node.active = ;
+            
             } else {
               //出牌失败，把选择的牌归位
               this.cards_node.map(node => node.emit("reset_card_flag"))
@@ -763,8 +810,7 @@ cc.Class({
             this.choose_card_data = []
           })
 
-          //先跳过自己出牌
-          // this.playingUI_node.active = false;
+       
           this.exchangeTimes -= 1;
           this.setSkillState( this.exchangeTimes);
           this.playingUI_node.getChildByName('btn_exchange').active = false;

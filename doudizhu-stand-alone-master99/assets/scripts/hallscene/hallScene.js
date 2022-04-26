@@ -1,4 +1,5 @@
 import myglobal from "../mygolbal.js"
+import callnative from "../common/CallNative"
 
 cc.Class({
   extends: cc.Component,
@@ -39,13 +40,32 @@ cc.Class({
 
   onLoad() {
     let self = this;
-    let url = " https://d21.huoshanyouxi.com/v1/auth/register/";
-    self.requstData(url,'POST',1,function(responseJson){
+
+    //定义原生调用的方法
+    // callnative.getDeviceInfo();
+
+  //   this.node.on(cc.Node.EventType.TOUCH_START, function (event) {
+  //     if (cc.sys.isNative&&cc.sys.os==cc.sys.OS_IOS) {
+  //     let ret = jsb.reflection.callStaticMethod("AdMaster","showAd:title:","有志者事竟成","淡定");
+  //     }
+  //  }, this);
+
+  //  jsb.reflection.callStaticMethod("AdMaster","showAd:title:","有志者事竟成","淡定");
+    
+  window.callOCMethod = (str)=>{
+      console.log(str);
+  }
+
+    let url = "https://d21.huoshanyouxi.com/v1/auth/register/";
+    // let url ='http://postman-echo.com/post'
+    self.requstDataNEW2(url,'POST',1,function(responseJson){
+      // console.log('sdfhsdfsdddf-----[ppppp]')
       let useid = '';
       useid = responseJson.data['id'];
-      // console.log('sdfsdf',responseJson.data['id']);
-      const count = useid
-      const userName = `guest_${count}`
+      // console.log('sdfhsdfsdf------1111')
+      console.log('sdfsdfdddddhttps',responseJson.data['id']);
+      let count = useid;
+      let userName = `guest_${count}`
       myglobal.playerData.userId = `${count}`
       myglobal.playerData.userName = userName
       cc.sys.localStorage.setItem('userData', JSON.stringify(myglobal.playerData))
@@ -55,6 +75,7 @@ cc.Class({
       //刷新下用户的id
       self.nickname_label.string = myglobal.playerData.userName
     })
+  
     this.nickname_label.string = myglobal.playerData.userName
     cc.director.preloadScene("gameScene")
 
@@ -70,8 +91,8 @@ cc.Class({
   updataPoint(){
     let self = this;
     //先获取下
-    let url = " https://d21.huoshanyouxi.com/v1/users/"+ myglobal.playerData.userId;
-    self.requstData(url,'GET',2,function(responseJson){
+    let url = "http://d21.huoshanyouxi.com/v1/users/"+ myglobal.playerData.userId;
+    self.requstDataNEW2(url,'GET',2,function(responseJson){
       console.log('qiandaoxinxi',responseJson);
       let point = responseJson["point"];
       //刷新先显示
@@ -81,33 +102,63 @@ cc.Class({
     })
   },
 
-  requstData(urldata,msgType,msgData,callback){
+  requstDataNEW2(urldata,msgType,msgData,callback){
 
-    var data = new FormData();
+    var data = "";
 
     var xhr = new XMLHttpRequest();
-    xhr.withCredentials = false;
-
+    // xhr.withCredentials = true;
+    console.log('sdfhsdfsdf------1111https')
     xhr.addEventListener("readystatechange", function() {
+      console.log('sdfhsdfsdf------2222')
       if(this.readyState === 4) {
+
         console.log(this.responseText);
-        var response = xhr.responseText;
-        var responseJson = JSON.parse(response);
+        console.log('sdfhsdfsdf------5555')
+        var responseJson = JSON.parse(this.responseText);
         if (callback) {
+          console.log('sdfhsdfsdf------6666')
           callback(responseJson);
         }
       }
     });
 
+    // xhr.open("POST", "https://d21.huoshanyouxi.com/v1/auth/register/");
     xhr.open(msgType, urldata);
+    // xhr.setRequestHeader("IMEI", "werwrerrdwerwertt");
     if (msgData == 1) {
-      xhr.setRequestHeader("IMEI", "werwrerdwerwer");
+      xhr.setRequestHeader("IMEI", "werwdrerrdwerwer");
     }else if(msgData == 2){
       let token_type = cc.sys.localStorage.getItem('token_type')
       let token = cc.sys.localStorage.getItem('token')
       xhr.setRequestHeader("Authorization", token_type + ' ' + token);
     }
     xhr.send(data);
+
+
+    //--------------------------------------------------------------------
+    // var data = '';
+    // var xhr = new XMLHttpRequest();
+    // // xhr.withCredentials = false;
+    // xhr.addEventListener("readystatechange", function() {
+    //   if(this.readyState === 4) {
+    //     var response = xhr.responseText;
+    //     var responseJson = JSON.parse(response);
+    //     if (callback) {
+    //       callback(responseJson);
+    //     }
+    //   }
+    // });
+  
+    // xhr.open(msgType, urldata);
+    // if (msgData == 1) {
+    //   xhr.setRequestHeader("IMEI", "werwdrerrdwerwer");
+    // }else if(msgData == 2){
+    //   let token_type = cc.sys.localStorage.getItem('token_type')
+    //   let token = cc.sys.localStorage.getItem('token')
+    //   xhr.setRequestHeader("Authorization", token_type + ' ' + token);
+    // }
+    // xhr.send(data);
   },
 
 
@@ -145,7 +196,7 @@ cc.Class({
     }
   },
   onBtnJingdian() {
-    const creator_Room = cc.instantiate(this.creatroom_prefabs)
+    let creator_Room = cc.instantiate(this.creatroom_prefabs)
     creator_Room.parent = this.node
     creator_Room.zIndex = 100
   },
@@ -190,13 +241,13 @@ cc.Class({
   showBonusView(){
     let self = this;
     //先获取下
-    let url = " https://d21.huoshanyouxi.com/v1/users/"+ myglobal.playerData.userId;
-    self.requstData(url,'GET',2,function(responseJson){
-      console.log('qiandaoxinxi',responseJson);
+    let url = "https://d21.huoshanyouxi.com/v1/users/"+ myglobal.playerData.userId;
+    self.requstDataNEW2(url,'GET',2,function(responseJson){
+      console.log('qiandaoxinxihttps',responseJson);
       let awardData = responseJson["award_list"];
       let point = responseJson["point"];
       //刷新先显示
-      self.bonusPointLab.string = point;
+      self.bonusPointLab.string = ''+point;
       //显示自己本来的金额
       myglobal.playerData.goldcount = point;
 

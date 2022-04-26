@@ -145,13 +145,10 @@ cc.Class({
         
     },
     updateMyCoin(dataNum){
-      
-
+        console.log('传输的值',dataNum);
         var data = "point="+dataNum;
-
         var xhr = new XMLHttpRequest();
         xhr.withCredentials = false;
-
         xhr.addEventListener("readystatechange", function() {
         if(this.readyState === 4) {
             console.log(this.responseText);
@@ -161,18 +158,14 @@ cc.Class({
             console.log('sdfsdfsdf',myglobal.playerData.goldcount);
             //刷新下自己的分数
             cc.director.emit('UPDATEMYPOINT',myglobal.playerData.userId);
-            
         }
         });
         xhr.open("POST", "https://d21.huoshanyouxi.com/v1/users/" + myglobal.playerData.userId + "/point");
         let token_type = cc.sys.localStorage.getItem('token_type')
         let token = cc.sys.localStorage.getItem('token')
         xhr.setRequestHeader("Authorization", token_type + ' ' + token);
-
-      
         // xhr.setRequestHeader("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2ODE5NjEwNjQsImlzcyI6InBoYWxjb24tand0LWF1dGgiLCJpZCI6IjEwMDAzIiwiaWF0IjoxNjUwNDI1MDY0fQ.EI8W2DenYzBdN_-PDHKrA0taKB5fXBbLqw5ZALVw1Fg");
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
         xhr.send(data);
     }
 

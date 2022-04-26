@@ -1,6 +1,6 @@
 import myglobal from "../../mygolbal.js"
-const ddzData = require('ddzData')
-const ddzConstants = require('ddzConstants')
+let ddzData = require('ddzData')
+let ddzConstants = require('ddzConstants')
 
 cc.Class({
   extends: cc.Component,
