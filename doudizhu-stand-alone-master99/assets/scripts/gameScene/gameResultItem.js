@@ -41,12 +41,12 @@ cc.Class({
     },
     initData(data,allScore){
         let self = this;
-        console.log('dangewanjiddda',allScore);
-        console.log(data);
+        //console.log('dangewanjiddda',allScore);
+        //console.log(data);
         //计算自己的得分
         let base =  myglobal.playerData.bottom;;
         let userGetScore = 4 * data.score  - allScore;
-        console.log('meigewanjiadefen',userGetScore)
+        //console.log('meigewanjiadefen',userGetScore)
         self.nameLab.string = 'guest_' + data.userId;
         self.scoreLab.string = '' + userGetScore;
         //设置玩家的数据

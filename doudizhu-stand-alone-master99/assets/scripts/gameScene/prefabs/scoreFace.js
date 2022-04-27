@@ -16,8 +16,8 @@ cc.Class({
             default: [],
             type: cc.SpriteFrame
         },
-        scoreNum: cc.Label,
-        facesp: cc.Sprite,
+        // scoreNum: cc.Label,
+        // facesp: cc.Sprite,
 
         awardFonts: {
             default: [],
@@ -41,14 +41,14 @@ cc.Class({
         self.smailNode.active =false;
         self.cryNode.active =false;
         if (data > 0) {
-            self.facesp.spriteFrame = self.faceBg[0];
-            self.scoreNum.font = self.awardFonts[0];
-            self.scoreNum.string = '+' + data;
+            // self.facesp.spriteFrame = self.faceBg[0];
+            // self.scoreNum.font = self.awardFonts[0];
+            // self.scoreNum.string =  ''+data;
             self.smailNode.active =true;
         } else {
-            self.facesp.spriteFrame = self.faceBg[1];
-            self.scoreNum.font = self.awardFonts[1];
-            self.scoreNum.string = '' + data;
+            // self.facesp.spriteFrame = self.faceBg[1];
+            // self.scoreNum.font = self.awardFonts[1];
+            // self.scoreNum.string = '-' + data;
             self.cryNode.active =true;
         }
     }

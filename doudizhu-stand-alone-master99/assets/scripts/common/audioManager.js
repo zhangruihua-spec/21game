@@ -15,7 +15,7 @@ module.exports = {
   _effectVolume: 1.0,
   PlayMusic: function (clip, finished) {
     this.MusicClip = clip || this.MusicClip;
-    cc.log('=========this.MusicClip=========' + this.MusicClip);
+    // cc.log('=========this.MusicClip=========' + this.MusicClip);
     // if (!Constants.AudioConfig.MusicToggle) return;
     // if(this._LastMusicClip==clip)return;
     this._LastMusicClip = clip;
@@ -37,7 +37,7 @@ module.exports = {
    * @description 暂停播放音乐
    */
   HidePagePause: function () {
-    console.log('HidePagePause', this._MusicId);
+    // //console.log('HidePagePause', this._MusicId);
     try {
       if (this._MusicId) {
         this._PauseMusic = true;
@@ -45,12 +45,12 @@ module.exports = {
         cc.audioEngine.pause(this._MusicId);
       }
     } catch (error) {
-      console.log('HidePagePause---error==', error);
+      // //console.log('HidePagePause---error==', error);
     }
 
   },
   ShowPageResume: function () {
-    console.log('ShowPageResume', this._MusicId);
+    // //console.log('ShowPageResume', this._MusicId);
     try {
       if (this._MusicId) {
         this._PauseMusic = false;
@@ -58,12 +58,12 @@ module.exports = {
         cc.audioEngine.resume(this._MusicId);
       }
     } catch (error) {
-      console.log('ShowPageResume---error==', error);
+      //console.log('ShowPageResume---error==', error);
     }
 
   },
   PauseMusic: function () {
-    console.log("暂停播放音乐");
+    //console.log("暂停播放音乐");
     cc.audioEngine.setVolume(this._MusicId, 0.0);
     cc.audioEngine.pause(this._MusicId);
   },
@@ -74,7 +74,7 @@ module.exports = {
    * @description 恢复播放音乐
    */
   ResumeMusic: function () {
-    console.log("恢复播放音乐");
+    //console.log("恢复播放音乐");
     cc.audioEngine.setVolume(this._MusicId, 1.0);
     cc.audioEngine.resume(this._MusicId);
   },

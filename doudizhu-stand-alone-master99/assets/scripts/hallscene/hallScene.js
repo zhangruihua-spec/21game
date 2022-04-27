@@ -57,22 +57,22 @@ cc.Class({
   //  jsb.reflection.callStaticMethod("AdMaster","showAd:title:","有志者事竟成","淡定");
     
   // window.callOCMethod = (str)=>{
-  //     console.log(str);
+  //     //console.log(str);
   // }
     // this.bgAudioId = common.audio.PlayEffect(this.bgAudio)
     self.getIMEI = '';
     if (cc.sys.isNative&&cc.sys.os==cc.sys.OS_IOS) {
       let ret = jsb.reflection.callStaticMethod("AdMaster","showAd:title:","teste","dandng");
-      console.log('打样depppp',ret);
+      //console.log('打样depppp',ret);
       self.getIMEI = ''+ret;
       self.scheduleOnce(function(){
         let url = "https://d21.huoshanyouxi.com/v1/auth/register/";
         self.requstDataNEW2(url,'POST',1,function(responseJson){
-          // console.log('sdfhsdfsdddf-----[ppppp]')
+          // //console.log('sdfhsdfsdddf-----[ppppp]')
           let useid = '';
           useid = responseJson.data['id'];
-          // console.log('sdfhsdfsdf------1111')
-          console.log('sdfsdfdddddhttps',responseJson.data['id']);
+          // //console.log('sdfhsdfsdf------1111')
+          //console.log('sdfsdfdddddhttps',responseJson.data['id']);
           let count = useid;
           let userName = `guest_${count}`
           myglobal.playerData.userId = `${count}`
@@ -102,7 +102,7 @@ cc.Class({
     //先获取下
     let url = "http://d21.huoshanyouxi.com/v1/users/"+ myglobal.playerData.userId;
     self.requstDataNEW2(url,'GET',2,function(responseJson){
-      console.log('qiandaoxinxi',responseJson);
+      //console.log('qiandaoxinxi',responseJson);
       let point = responseJson["point"];
       //刷新先显示
       self.bonusPointLab.string = point;
@@ -117,16 +117,16 @@ cc.Class({
 
     var xhr = new XMLHttpRequest();
     // xhr.withCredentials = true;
-    console.log('sdfhsdfsdf------1111https')
+    //console.log('sdfhsdfsdf------1111https')
     xhr.addEventListener("readystatechange", function() {
-      console.log('sdfhsdfsdf------2222')
+      //console.log('sdfhsdfsdf------2222')
       if(this.readyState === 4) {
 
-        console.log(this.responseText);
-        console.log('sdfhsdfsdf------5555')
+        //console.log(this.responseText);
+        //console.log('sdfhsdfsdf------5555')
         var responseJson = JSON.parse(this.responseText);
         if (callback) {
-          console.log('sdfhsdfsdf------6666')
+          //console.log('sdfhsdfsdf------6666')
           callback(responseJson);
         }
       }
@@ -252,7 +252,7 @@ cc.Class({
     //先获取下
     let url = "https://d21.huoshanyouxi.com/v1/users/"+ myglobal.playerData.userId;
     self.requstDataNEW2(url,'GET',2,function(responseJson){
-      console.log('qiandaoxinxihttps',responseJson);
+      //console.log('qiandaoxinxihttps',responseJson);
       let awardData = responseJson["award_list"];
       let point = responseJson["point"];
       //刷新先显示

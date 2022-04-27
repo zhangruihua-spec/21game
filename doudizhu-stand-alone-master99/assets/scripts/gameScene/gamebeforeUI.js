@@ -15,9 +15,9 @@ cc.Class({
 
     //监听本地的发送的消息
     // this.node.on("init", function () {
-    //   console.log("game beforeui init")
-    //   console.log("myglobal.playerData.housemanageid" + myglobal.playerData.housemanageid)
-    //   console.log("myglobal.playerData.userId" + myglobal.playerData.userId)
+    //   //console.log("game beforeui init")
+    //   //console.log("myglobal.playerData.housemanageid" + myglobal.playerData.housemanageid)
+    //   //console.log("myglobal.playerData.userId" + myglobal.playerData.userId)
     //   if (myglobal.playerData.housemanageid == myglobal.playerData.userId) {
     //     //自己就是房主
     //     this.btn_gamestart.active = true
@@ -30,12 +30,12 @@ cc.Class({
 
     //监听服务器发送来的消息
     // myglobal.socket.onGameStart(function(){
-    //     console.log("gamebrforeUI onGameStart revice")
+    //     //console.log("gamebrforeUI onGameStart revice")
     //     this.node.active = false
     // }.bind(this))
 
     // myglobal.socket.onChangeHouseManage(function (data) {
-    //   console.log("gamebrforeUI onChangeHouseManage revice" + JSON.stringify(data))
+    //   //console.log("gamebrforeUI onChangeHouseManage revice" + JSON.stringify(data))
     //   myglobal.playerData.housemanageid = data
     //   if (myglobal.playerData.housemanageid == myglobal.playerData.userId) {
     //     //自己就是房主
@@ -58,7 +58,7 @@ cc.Class({
   onButtonClick(event, customData) {
     switch (customData) {
       case "btn_ready":
-        console.log("btn_ready")
+        //console.log("btn_ready")
         // myglobal.socket.requestReady()
         this.btn_ready.active = false
         break
@@ -66,12 +66,12 @@ cc.Class({
         // if(isopen_sound){
         //    cc.audioEngine.play(cc.url.raw("resources/sound/start_a.ogg")) 
         //  }
-        console.log("btn_start")
+        //console.log("btn_start")
         myglobal.socket.requestStart(function (err, data) {
           if (err != 0) {
-            console.log("requestStart err" + err)
+            //console.log("requestStart err" + err)
           } else {
-            console.log("requestStart data" + JSON.stringify(data))
+            //console.log("requestStart data" + JSON.stringify(data))
 
           }
         })

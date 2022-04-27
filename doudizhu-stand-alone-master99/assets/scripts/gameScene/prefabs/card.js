@@ -48,7 +48,7 @@ cc.Class({
         // var gameScene_node = this.node.parent
         // var room_state = gameScene_node.getComponent("gameScene").roomstate
         if (ddzData.gameState === ddzConstants.gameState.PLAYING) {
-          console.log("TOUCH_START id:" + this.caardIndex)
+          //console.log("TOUCH_START id:" + this.caardIndex)
           if (!this.flag) {
             this.flag = true
             this.node.y += this.offset_y

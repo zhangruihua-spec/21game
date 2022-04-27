@@ -313,7 +313,7 @@
       "array": [
         0,
         0,
-        283.1903076171875,
+        284.05633544921875,
         0,
         0,
         0,
@@ -451,9 +451,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "21464690-a416-4d5e-abed-a50668afea81"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 0,
     "_fillType": 0,
@@ -631,9 +629,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "b107ad37-7211-4f5a-96c3-4e55e7ee3377"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 0,
     "_fillType": 0,
@@ -901,9 +897,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "7adda914-0d9d-471d-ada3-3c21ecfe88e2"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 1,
     "_fillType": 0,
@@ -933,9 +927,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "0bd5b459-a49d-4a15-b42a-ce3b773fe735"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 0,
     "_fillType": 0,
@@ -1133,9 +1125,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "2446244e-928c-4da8-9b97-ab0a20591fd7"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 1,
     "_fillType": 0,
@@ -1147,9 +1137,7 @@
     "_fillStart": 0,
     "_fillRange": 0,
     "_isTrimmedMode": true,
-    "_atlas": {
-      "__uuid__": "54d389e4-f2a3-4cb0-b063-de842c8250ec"
-    },
+    "_atlas": null,
     "_id": "02499OzfJHjoD/dZkrjQCs"
   },
   {
@@ -1242,9 +1230,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "2080c47d-2310-4b65-b89e-6263837e7288"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 1,
     "_fillType": 0,
@@ -1536,9 +1522,7 @@
       "__id__": 2
     },
     "_enabled": true,
-    "_clip": {
-      "__uuid__": "4a4c60f9-7772-4721-a77c-de0125306748"
-    },
+    "_clip": null,
     "_volume": 1,
     "_mute": false,
     "_loop": true,

@@ -2695,8 +2695,8 @@ if (!CC_JSB && !cc.sys.isNative) {
 	}
 
 	/**
-	 * Invokes `console.log()` when available.
-	 * No-op when `console.log` is not a "function".
+	 * Invokes `//console.log()` when available.
+	 * No-op when `//console.log` is not a "function".
 	 *
 	 * @api public
 	 */

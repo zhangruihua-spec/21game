@@ -12,7 +12,7 @@ const socketCtr = function(){
     } 
  
     const _request = function(cmdtype,req,callback){
-        console.log("send cmd:"+cmdtype+"  "+ JSON.stringify(req))
+        //console.log("send cmd:"+cmdtype+"  "+ JSON.stringify(req))
         call_index++ 
         respone_map[call_index] = callback
         _sendmsg(cmdtype,req,call_index)
@@ -28,11 +28,11 @@ const socketCtr = function(){
         _socket = window.io.connect(defines.serverUrl,opts);
 
         _socket.on("connection",function(){
-            console.log("connect server success!!")
+            //console.log("connect server success!!")
           })
 
        _socket.on("notify",function(res){
-         console.log("on notify cmd:" + JSON.stringify(res))
+         //console.log("on notify cmd:" + JSON.stringify(res))
          if(respone_map.hasOwnProperty(res.callBackIndex)){
            var callback = respone_map[res.callBackIndex]
            if(callback){
@@ -40,7 +40,7 @@ const socketCtr = function(){
            }
           }else{
            //if(res.callBackIndex!=0){
-           //console.log("not found call index",res.callBackIndex)
+           ////console.log("not found call index",res.callBackIndex)
               
                //提交一个监听的事件给监听器
         //  on notify cmd:{"type":"player_joinroom_notify","result":0,"data":

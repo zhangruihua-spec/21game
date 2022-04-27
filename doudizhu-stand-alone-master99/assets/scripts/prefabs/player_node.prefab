@@ -1469,9 +1469,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "531788c6-baed-416c-b915-bbddffd909ab"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 0,
     "_fillType": 0,
@@ -1603,9 +1601,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "235f7f8c-6f30-4b45-b3af-2071973b010e"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 1,
     "_fillType": 0,
@@ -1898,8 +1894,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 21.22,
-      "height": 19.6
+      "width": 22.36,
+      "height": 23.94
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -1954,10 +1950,8 @@
     "_fontSize": 40.2,
     "_lineHeight": 19.6,
     "_enableWrapText": true,
-    "_N$file": {
-      "__uuid__": "e0839464-b2d6-459a-a545-3df5cb3d050f"
-    },
-    "_isSystemFontUsed": false,
+    "_N$file": null,
+    "_isSystemFontUsed": true,
     "_spacingX": 0,
     "_batchAsBitmap": false,
     "_N$horizontalAlign": 1,
@@ -1993,9 +1987,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "215167ef-cfd1-4aa2-8ffd-ba5ac44995b2"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 1,
     "_fillType": 0,
@@ -2111,9 +2103,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "451654d5-673f-4270-ab3e-5bc5785f9027"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 1,
     "_fillType": 0,
@@ -2218,9 +2208,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "ec642347-6b71-4634-8bf4-2764a5975be7"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 1,
     "_fillType": 0,
@@ -2325,9 +2313,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "bbb6bd14-4f52-4bcb-ada8-6e80e0db2cd9"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 1,
     "_fillType": 0,

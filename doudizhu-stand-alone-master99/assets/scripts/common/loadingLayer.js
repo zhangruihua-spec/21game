@@ -16,8 +16,8 @@ var LoadingLayer = cc.Class({
     cc.game.addPersistRootNode(this.node);
     // 场景跳转
     let { userId, roomId } = myglobal.playerData
-    console.log('userId = ', userId)
-    console.log('roomId = ', roomId)
+    //console.log('userId = ', userId)
+    //console.log('roomId = ', roomId)
     if (!userId) {
       cc.director.loadScene('hallScene')
     } else if (!roomId) {

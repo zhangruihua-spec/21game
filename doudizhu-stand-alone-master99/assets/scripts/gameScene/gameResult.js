@@ -62,13 +62,13 @@ cc.Class({
         let self = this;
         if (palyerData[myglobal.playerData.userId]) {
             //我自己的信息
-            console.log('palyerData--',palyerData[myglobal.playerData.userId]);
+            //console.log('palyerData--',palyerData[myglobal.playerData.userId]);
         }
         let playerGetScore = [];
         let allScore = 0;
     
         let baseScore = myglobal.playerData.bottom;
-        console.log('youxidifen',baseScore);
+        //console.log('youxidifen',baseScore);
         //首先计算下每个玩家的得分
         for (let index = 0; index < palyerData.players.length; index++) {
             playerGetScore.push(palyerData[palyerData.players[index]].score);
@@ -151,11 +151,11 @@ cc.Class({
         xhr.withCredentials = false;
         xhr.addEventListener("readystatechange", function() {
         if(this.readyState === 4) {
-            console.log(this.responseText);
+            console.log('dataNum',dataNum);
             let temp = parseInt( myglobal.playerData.goldcount)
             temp+= parseInt(dataNum);
             myglobal.playerData.goldcount = temp;
-            console.log('sdfsdfsdf',myglobal.playerData.goldcount);
+            //console.log('sdfsdfsdf',myglobal.playerData.goldcount);
             //刷新下自己的分数
             cc.director.emit('UPDATEMYPOINT',myglobal.playerData.userId);
         }

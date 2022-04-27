@@ -35,7 +35,7 @@ export default class CallNative {
     //这里的msg 可以是任意参数，如果参数类型复杂可以传入json数据哦
     public static onFunc(msg: any): void {
         //然后我们就可以在这里面 更具oc的回调在处理游戏脚本里的任意方法拉~
-        console.log('msgrrrrr',msg);
+        //console.log('msgrrrrr',msg);
     }
 }
 

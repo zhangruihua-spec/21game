@@ -204,7 +204,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 6
@@ -341,7 +341,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 10
@@ -611,12 +611,6 @@
         "__uuid__": "36376093-f983-404b-b7cb-df0a0df4b313"
       }
     ],
-    "scoreNum": {
-      "__id__": 6
-    },
-    "facesp": {
-      "__id__": 3
-    },
     "awardFonts": [
       {
         "__uuid__": "cd81ee96-8385-4c00-803e-d01545a54d8c"
