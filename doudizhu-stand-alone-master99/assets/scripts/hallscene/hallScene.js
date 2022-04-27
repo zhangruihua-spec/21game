@@ -34,6 +34,10 @@ cc.Class({
     bonusSmallPre: cc.Prefab,
     //领取的point
     bonusPointLab:cc.Label,
+    bgAudio: {
+      type: cc.AudioClip,
+      default: null
+    },
   },
 
   // LIFE-CYCLE CALLBACKS:
@@ -52,33 +56,38 @@ cc.Class({
 
   //  jsb.reflection.callStaticMethod("AdMaster","showAd:title:","有志者事竟成","淡定");
     
-  window.callOCMethod = (str)=>{
-      console.log(str);
-  }
+  // window.callOCMethod = (str)=>{
+  //     console.log(str);
+  // }
+    // this.bgAudioId = common.audio.PlayEffect(this.bgAudio)
+    self.getIMEI = '';
+    if (cc.sys.isNative&&cc.sys.os==cc.sys.OS_IOS) {
+      let ret = jsb.reflection.callStaticMethod("AdMaster","showAd:title:","teste","dandng");
+      console.log('打样depppp',ret);
+      self.getIMEI = ''+ret;
+      self.scheduleOnce(function(){
+        let url = "https://d21.huoshanyouxi.com/v1/auth/register/";
+        self.requstDataNEW2(url,'POST',1,function(responseJson){
+          // console.log('sdfhsdfsdddf-----[ppppp]')
+          let useid = '';
+          useid = responseJson.data['id'];
+          // console.log('sdfhsdfsdf------1111')
+          console.log('sdfsdfdddddhttps',responseJson.data['id']);
+          let count = useid;
+          let userName = `guest_${count}`
+          myglobal.playerData.userId = `${count}`
+          myglobal.playerData.userName = userName
+          cc.sys.localStorage.setItem('userData', JSON.stringify(myglobal.playerData))
+          //存一下token_type token
+          cc.sys.localStorage.setItem('token', responseJson.data['token'])
+          cc.sys.localStorage.setItem('token_type', responseJson.data['token_type'])
+          //刷新下用户的id
+          self.nickname_label.string = myglobal.playerData.userName;
+          cc.director.preloadScene("gameScene")
+        })
 
-    let url = "https://d21.huoshanyouxi.com/v1/auth/register/";
-    // let url ='http://postman-echo.com/post'
-    self.requstDataNEW2(url,'POST',1,function(responseJson){
-      // console.log('sdfhsdfsdddf-----[ppppp]')
-      let useid = '';
-      useid = responseJson.data['id'];
-      // console.log('sdfhsdfsdf------1111')
-      console.log('sdfsdfdddddhttps',responseJson.data['id']);
-      let count = useid;
-      let userName = `guest_${count}`
-      myglobal.playerData.userId = `${count}`
-      myglobal.playerData.userName = userName
-      cc.sys.localStorage.setItem('userData', JSON.stringify(myglobal.playerData))
-      //存一下token_type token
-      cc.sys.localStorage.setItem('token', responseJson.data['token'])
-      cc.sys.localStorage.setItem('token_type', responseJson.data['token_type'])
-      //刷新下用户的id
-      self.nickname_label.string = myglobal.playerData.userName
-    })
-  
-    this.nickname_label.string = myglobal.playerData.userName
-    cc.director.preloadScene("gameScene")
-
+      },1);
+    }
   },
 
   onEnable(){
@@ -103,7 +112,7 @@ cc.Class({
   },
 
   requstDataNEW2(urldata,msgType,msgData,callback){
-
+    let self = this;
     var data = "";
 
     var xhr = new XMLHttpRequest();
@@ -127,7 +136,7 @@ cc.Class({
     xhr.open(msgType, urldata);
     // xhr.setRequestHeader("IMEI", "werwrerrdwerwertt");
     if (msgData == 1) {
-      xhr.setRequestHeader("IMEI", "werwdrerrdwerwer");
+      xhr.setRequestHeader("IMEI", self.getIMEI);
     }else if(msgData == 2){
       let token_type = cc.sys.localStorage.getItem('token_type')
       let token = cc.sys.localStorage.getItem('token')

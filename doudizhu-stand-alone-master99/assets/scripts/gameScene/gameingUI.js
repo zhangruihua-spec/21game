@@ -15,8 +15,7 @@ cc.Class({
     bottom_card_pos_node: cc.Node, // 底牌节点
     playingUI_node: cc.Node, // 出牌提示节点
     tipsLabel: cc.Label, //玩家出牌不合法的tips
-    loseNode: cc.Node, // 失败特效节点
-    winNode: cc.Node, // 胜利特效节点
+
     scoreNumLabel: cc.Label, // 桌子上面 牌的总点数
     score_prefab: cc.Prefab, // 得分节点
     result_prefab: cc.Prefab, // 结算
@@ -190,9 +189,7 @@ cc.Class({
   gameStateHandler(state) {
     // 开始游戏 - 已准备
     if (state === ddzConstants.gameState.GAMESTART) {
-      // 关闭胜利或失败效果
-      this.winNode.active = false
-      this.loseNode.active = false
+  
       // 清楚桌面上所有的牌
       this.cards_node = []
       this.bottom_card = []
@@ -676,7 +673,7 @@ cc.Class({
         break
       case CardsValue.double.name:
         if (isopen_sound) {
-          cc.audioEngine.play(cc.url.raw("resources/sound/duizi.mp3"))
+          // cc.audioEngine.play(cc.url.raw("resources/sound/duizi.mp3"))
         }
         break
     }
