@@ -20,9 +20,6 @@ const AICardType = (val, cardList) => ({val, cardList})
  */
 AILogic.prototype.follow = function (winc, winnerCardCount) {
   var self = this;
-
-  //console.log('cards--',self.cards);
-
   var c = self.cards.slice(0, 1);
            
               return {

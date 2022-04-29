@@ -27,7 +27,6 @@ let getRandomStr = function (count) {
   that.gobal_count = cc.sys.localStorage.getItem('user_count')
   // that.master_accountid = 0
   if (!userData) {
-    //console.log(userData)
     cc.sys.localStorage.setItem('userData', JSON.stringify(that))
   }
   return that;

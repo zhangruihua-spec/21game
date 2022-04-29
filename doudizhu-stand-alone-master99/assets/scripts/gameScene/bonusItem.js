@@ -59,7 +59,6 @@ cc.Class({
 
         xhr.addEventListener("readystatechange", function() {
         if(this.readyState === 4) {
-            //console.log(this.responseText);
             //给自己加金币
 
             cc.director.emit('UPDATAPOINT');

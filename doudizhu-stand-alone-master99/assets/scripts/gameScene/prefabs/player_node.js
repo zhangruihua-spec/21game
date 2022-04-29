@@ -67,7 +67,6 @@ cc.Class({
     //给其他玩家发牌事件
     this.node.on("push_card_event", function (event) {
       // if (this.seat_index === 0) return // 自己不再发牌
-      //console.log('给其他玩家发牌事件');
       this.pushCard()
     }.bind(this))
     // this.node.on("playernode_rob_state_event", function (event) {
@@ -82,14 +81,12 @@ cc.Class({
     //   }
     //   if (this.userId == detail.userId) {
     //     if (detail.state == qian_state.qiang) {
-    //       //console.log("this.robIcon_Sp.active = true")
     //       this.robIcon_Sp.active = true
 
     //     } else if (detail.state == qian_state.buqiang) {
     //       this.robnoIcon_Sp.active = true
 
     //     } else {
-    //       //console.log("get rob value :" + detail.state)
     //     }
     //   }
 
@@ -167,7 +164,6 @@ cc.Class({
     var head_image_path = "UI/headimage/" + data.avatarUrl
     cc.loader.loadRes(head_image_path, cc.SpriteFrame, function (err, spriteFrame) {
       if (err) {
-        //console.log(err.message || err);
         return;
       }
       this.headImage.spriteFrame = spriteFrame;

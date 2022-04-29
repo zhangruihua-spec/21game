@@ -119,7 +119,6 @@ cc.Class({
                 val  =  val - 13;
             }
             calcCardScore.push(val);
-            //console.log('jisuande',calcCardScore);
             if (calcScore(calcCardScore) == 21) {
                 for (let index = 0; index < calcCardScore.length; index++) {
                     self.outcardsData.pop();

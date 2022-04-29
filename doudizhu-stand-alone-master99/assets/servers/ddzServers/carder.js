@@ -64,10 +64,6 @@ function carder() {
       that.card_list[randomIndex] = that.card_list[i];
       that.card_list[i] = tmpCard;
     }
-
-    // for(var i=0;i<that.card_list.length;i++){
-    //     //console.log("card value:"+that.card_list[i].value+" shape:"+that.card_list[i].shape+" king"+that.card_list[i].king)
-    // }
     return that.card_list
   }
   //发牌

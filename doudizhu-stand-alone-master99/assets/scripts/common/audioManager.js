@@ -37,7 +37,6 @@ module.exports = {
    * @description 暂停播放音乐
    */
   HidePagePause: function () {
-    // //console.log('HidePagePause', this._MusicId);
     try {
       if (this._MusicId) {
         this._PauseMusic = true;
@@ -45,12 +44,10 @@ module.exports = {
         cc.audioEngine.pause(this._MusicId);
       }
     } catch (error) {
-      // //console.log('HidePagePause---error==', error);
     }
 
   },
   ShowPageResume: function () {
-    // //console.log('ShowPageResume', this._MusicId);
     try {
       if (this._MusicId) {
         this._PauseMusic = false;
@@ -58,12 +55,10 @@ module.exports = {
         cc.audioEngine.resume(this._MusicId);
       }
     } catch (error) {
-      //console.log('ShowPageResume---error==', error);
     }
 
   },
   PauseMusic: function () {
-    //console.log("暂停播放音乐");
     cc.audioEngine.setVolume(this._MusicId, 0.0);
     cc.audioEngine.pause(this._MusicId);
   },
@@ -74,7 +69,6 @@ module.exports = {
    * @description 恢复播放音乐
    */
   ResumeMusic: function () {
-    //console.log("恢复播放音乐");
     cc.audioEngine.setVolume(this._MusicId, 1.0);
     cc.audioEngine.resume(this._MusicId);
   },

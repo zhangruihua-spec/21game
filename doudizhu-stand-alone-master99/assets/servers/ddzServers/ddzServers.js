@@ -62,7 +62,6 @@ let ddzServers = {
       case states.GETCARD: // 摸牌阶段
         //随机通知一个摸牌
         this.landlordId = parseInt(this.playersData.players[0]);
-        //console.log('mopaijieduan');
         self.getCard(this.playersData[this.landlordId]);
       
         
@@ -95,12 +94,6 @@ let ddzServers = {
     let cardList = carder.splitThreeCards() // 生成新牌
     let handcardList = cardList[4] // 剩余桌上的牌
     this.handCardOther = handcardList;
-    //console.log('ssscddddd',userId);
-    //console.log('ssscdfrddddd',rightPlayerId);
-    //console.log('ssscdfrdd',leftPlayerId);
-    //console.log('ssscddfggd',thirdPlayerId);
-    //console.log('sssc',this.handCardOther);
-    //console.log('新牌', cardList)
     let playersData = {
       players: [userId, rightPlayerId, leftPlayerId, thirdPlayerId], // 当前房间玩家id集合
       cards: cardList[3], // 底牌
@@ -186,7 +179,6 @@ let ddzServers = {
   nextPlayegetCard(userId) {
     // this.setGameState(ddzConstants.gameState.GETCARD)
     //机器人摸牌
-    //console.log('mopaijieduasssn',this.playersData[userId].nextPlayer);
     this.getCard(this.playersData[userId].nextPlayer);
    
     //机器人出牌
@@ -207,24 +199,17 @@ let ddzServers = {
   //通知摸牌
   getCard(player) {
     let self = this;
-    // //console.log('摸牌', player);
     // const ai = new AILogic(player)
-    //console.log('uidddssdddegege',player);
     let uid = player.userId;
     let myuid = mygolbal.playerData.userId;
-    //console.log('uidddssddddeeg',uid)
-    //console.log('uidddssdddddd',myuid)
     if (player.userId == mygolbal.playerData.userId) {
       //自己摸牌
-      //console.log('tongzhimopaidd',mygolbal.playerData.userId)
-      //console.log('tongzhimopai',player.userId)
       if (self.firsetGetCard == 0) {
         setTimeout(() => {  window.$socket.emit('selfGetAHandNotify') }, 6000);
         self.firsetGetCard =1;
       }else{
         window.$socket.emit('selfGetAHandNotify') ;
       }
-      //console.log('剩余桌面牌', self.handCardOther.length);
     } else {
       // 机器摸牌
       let restNum = self.handCardOther.length;
@@ -234,9 +219,7 @@ let ddzServers = {
         cards:self.handCardOther[restNum - 1],
         handCardNum:restNum - 1
       })
-      self.handCardOther.pop();
-      //console.log('剩余桌面牌', self.handCardOther.length);
-      
+      self.handCardOther.pop();      
     }
   },
   //技能1 随机换几张牌
@@ -261,13 +244,7 @@ let ddzServers = {
         handcard.push(self.handCardOther[index]);
         window.$socket.emit('refreshHandCard',self.handCardOther[index]);
      }
-    //  //console.log('hhhdd--000',forChangeCardData)
-     //console.log('hhhdd--1111',self.handCardOther)
      self.handCardOther.splice(0,userNum,[cards])
-     //console.log('hhhdd--2222',self.handCardOther)
-
-     //console.log('hhhdd-333',handcard)
-
      callback && callback({
       state: 1
     })
@@ -282,19 +259,14 @@ let ddzServers = {
     if (self.handCardOther.length < 3) {
       return;
     }
-    //console.log('dedaoindextoodll', self.handCardOther);
     let handlenght = self.handCardOther.length;
     let handIndex =  Math.round(Math.random()*handlenght);
     let threeCard =[]
     let handIndex2  = handIndex+1 < handlenght - 1 ? handIndex + 1: (handIndex+1)%(handIndex-1)
     let handIndex3  = handIndex+2 < handlenght - 1 ? handIndex + 2: (handIndex+2)%(handIndex-1)
-    //console.log('dedaoindex',handIndex)
-    //console.log('dedaoindex',handIndex2)
-    //console.log('dedaoindex',handIndex3)
     threeCard.push(self.handCardOther[handIndex])
     threeCard.push(self.handCardOther[handIndex2])
     threeCard.push(self.handCardOther[handIndex3])
-    //console.log('dedaoindexss',threeCard)
     //发送给客户端
     window.$socket.emit('chooseFromThreeCard',threeCard);
   },
@@ -302,15 +274,12 @@ let ddzServers = {
   threeSelectedCard(data){
     let self = this;
       //1,先从牌堆删除
-      //console.log('yyrr-d1',self.handCardOther)
-      //console.log('yyrr-d2',data)
       for (let j = 0; j < self.handCardOther.length; j++) {
         const element = self.handCardOther[j];
         if ( self.handCardOther[j].index == data.index ) {
           self.handCardOther.splice(j,1);
         }
       }
-      //console.log('yyrr-d3',self.handCardOther)
       //2,添加到我自己的手牌上
       self.playersData[mygolbal.playerData.userId].cardList.push(data);
       window.$socket.emit('refreshHandCard',data);
@@ -322,7 +291,6 @@ let ddzServers = {
 
   // 发布出牌通知
   playCard(player) {
-    //console.log('出牌-----', player)
     // const isOver = this.roundWinId && !this.playersData[this.roundWinId].cardList.length
     //最后一个玩家出完所有牌，或者所有暗牌被摸完
     // if ( player.cardList.length == 0) {
@@ -335,13 +303,11 @@ let ddzServers = {
     if (player.userId === mygolbal.playerData.userId) {
       // 准备要提示的牌
       // const winc = this.roundWinId && this.roundWinId !== player.userId ? this.winCards : null
-      // //console.log(winc ? '玩家跟牌' : '玩家出牌')
       // const promptList = ai.prompt(winc);
       // 自己先摸一张牌，再丢一张牌到牌堆
       window.$socket.emit('selfPlayAHandNotify',function(){
         if (self.handCardOther.length == 0) {
           // 游戏结束
-          //console.log('jialeliangcddi?',self.handCardOther.length);
           this.setGameState(ddzConstants.gameState.GAMEEND)
           return
         }
@@ -353,15 +319,12 @@ let ddzServers = {
       // if (!this.roundWinId || this.roundWinId === player.userId) {
       //   // 如果本轮出牌赢牌是自己：出牌
       //   result = ai.play(this.playersData[this.landlordId].cardList.length)
-      //   //console.log(player.userId, 'AI出牌', result)
       // } else {
       //   // 跟牌，根据上一轮赢家的牌型、是不是地主、还剩几张牌
       //   const playerData = this.playersData[this.roundWinId]
       //   const isLandlord = playerData.userId === this.landlordId
       //   result = ai.follow(this.winCards, isLandlord, playerData.cardList.length);
-      //   //console.log(player.userId, 'AI跟牌', result)
       // }
-      // //console.log('roundWinId',this.roundWinId);
       let playerData = this.playersData[player.userId]
       result = ai.follow(this.winCards, playerData.cardList.length);
 
@@ -372,7 +335,6 @@ let ddzServers = {
         if (state === 1) {
           if (self.handCardOther.length == 0) {
             // 游戏结束
-            //console.log('jialeliangcddi?',self.handCardOther.length);
             this.setGameState(ddzConstants.gameState.GAMEEND)
             return;
           }
@@ -414,7 +376,6 @@ let ddzServers = {
     self.playersData[userId].cardList.push(handData);
     self.handCardOther.pop();    
 
-    //console.log('wanjiazhuapai ',self.handCardOther.length);
     let newrestNum = self.handCardOther.length;
 
     callback && callback({
@@ -442,9 +403,7 @@ let ddzServers = {
 
   // 玩家自己出牌消息
   playAHandNotify({ userId, cards }, callback) {
-    //console.log(cards)
     let type = this.getReadyCardsKind(cards)
-    //console.log(type)
     // 校验出牌是否合格
     if (!type) {
       callback && callback({

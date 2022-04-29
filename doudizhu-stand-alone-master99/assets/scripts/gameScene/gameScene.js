@@ -33,7 +33,6 @@ cc.Class({
     this.roomid_label.string = defines.roomNames[rate - 1]
     this.beishu_label.string = "倍数：" + rate
     this.di_label.string = "底：" + bottom
-    //console.log('重新开始', ddzData.gameState)
     this.btn_ready.active = ddzData.gameState < ddzConstants.gameState.GAMESTART // 准备按钮
     if (isopen_sound) {
       cc.audioEngine.stopAll()
@@ -45,7 +44,6 @@ cc.Class({
     this.addPlayerNode(myglobal.playerData.rootList[2])
     //监听，给其他玩家发牌(内部事件)
     this.node.on("pushcard_other_event", function () {
-      //console.log('其他玩家发牌')
       for (let i = 0; i < this.playerNodeList.length; i++) {
         const node = this.playerNodeList[i]
         if (node) {
@@ -58,12 +56,10 @@ cc.Class({
     //监听房间状态改变事件
     // myglobal.socket.onRoomChangeState(function (data) {
     //   //回调的函数参数是进入房间用户消息
-    //   //console.log("onRoomChangeState:" + data)
     //   this.roomstate = data
     // }.bind(this))
     // 抢地主
     // this.node.on("canrob_event", function (event) {
-    //   //console.log("gamescene canrob_event:" + event)
     //   //通知给playernode子节点
     //   for (var i = 0; i < this.playerNodeList.length; i++) {
     //     var node = this.playerNodeList[i]
@@ -83,7 +79,6 @@ cc.Class({
     // }.bind(this))
     //监听给玩家添加三张底牌
     // this.node.on("add_three_card",function(event){
-    //     //console.log("add_three_card:"+event)
     //     for(var i=0;i<this.playerNodeList.length;i++){
     //         var node = this.playerNodeList[i]
     //         if(node){
@@ -95,9 +90,7 @@ cc.Class({
     return
 
     myglobal.socket.request_enter_room({}, function (err, result) {
-      //console.log("enter_room_resp" + JSON.stringify(result))
       if (err != 0) {
-        //console.log("enter_room_resp err:" + err)
       } else {
 
         //enter_room成功
@@ -125,13 +118,11 @@ cc.Class({
     //在进入房间后，注册其他玩家进入房间的事件
     myglobal.socket.onPlayerJoinRoom(function (join_playerdata) {
       //回调的函数参数是进入房间用户消息
-      //console.log("onPlayerJoinRoom:" + JSON.stringify(join_playerdata))
       this.addPlayerNode(join_playerdata)
     }.bind(this))
 
     //回调参数是发送准备消息的accountid
     myglobal.socket.onPlayerReady(function (data) {
-      //console.log("-------onPlayerReady:" + data)
       for (var i = 0; i < this.playerNodeList.length; i++) {
         var node = this.playerNodeList[i]
         if (node) {
@@ -157,7 +148,6 @@ cc.Class({
 
     //监听服务器玩家抢地主消息
     // myglobal.socket.onRobState(function (event) {
-    //   //console.log("-----onRobState" + JSON.stringify(event))
     //   //onRobState{"accountid":"2162866","state":1}
     //   for (var i = 0; i < this.playerNodeList.length; i++) {
     //     var node = this.playerNodeList[i]
@@ -170,7 +160,6 @@ cc.Class({
 
     //注册监听服务器确定地主消息
     myglobal.socket.onChangeMaster(function (event) {
-      //console.log("onChangeMaster" + event)
       //保存一下地主id
       myglobal.playerData.masterUserId = event
       for (var i = 0; i < this.playerNodeList.length; i++) {
@@ -184,7 +173,6 @@ cc.Class({
 
     //注册监听服务器显示底牌消息
     // myglobal.socket.onShowBottomCard(function (event) {
-    //   //console.log("onShowBottomCard---------" + event)
     //   this.gameUiNode.emit("show_bottom_card_event", event)
     // }.bind(this))
   },
@@ -236,11 +224,9 @@ cc.Class({
   //seat_index自己在房间的位置id
   // setPlayerSeatPos(seat_index) {
   //   if (seat_index < 1 || seat_index > 3) {
-  //     //console.log("seat_index error" + seat_index)
   //     return
   //   }
 
-  //   //console.log("setPlayerSeatPos seat_index:" + seat_index)
 
   //   //界面位置转化成逻辑位置
   //   switch (seat_index) {

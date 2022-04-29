@@ -168,7 +168,6 @@ cc.Class({
     }
   },
   chooseFromThreeCard(data){
-    //console.log('kehuduande',data);
     let self = this;
     if (data) {
       let chooseNode = cc.instantiate(self.chooseThree_prefab)
@@ -219,7 +218,6 @@ cc.Class({
       let self = this;
       self.startNode.position = cc.v2(0, 0);
       self.cardBackGroudNd.position = cc.v2(-400, 17);
-      //console.log('weizhixinxi', self.cardBackGroudNd.position);
       self.startNode.scale = 1;
       self.startNode.active = true;
       self.startNode.stopAllActions();
@@ -255,7 +253,6 @@ cc.Class({
       self.pushCard(data)
       //左边移动定时器
       self.scheduleOnce(self._runactive_pushcard.bind(self), 0.3)
-      //console.log('pushcard_other_event');
       self.node.parent.emit("pushcard_other_event")
       self.finishSendCard = 1
       self.playingUI_node.active = true;//展示出牌按钮
@@ -291,7 +288,6 @@ cc.Class({
    * @description 出牌
    */
   selfPlayAHandNotify(callback) {
-    //console.log('玩家出牌提示')
     this.myOutCardCallBack = callback;
     this.promptCount = 0
     // this.promptList = promptList
@@ -321,7 +317,6 @@ cc.Class({
     self.playingUI_node.getChildByName('btn_chupai').active = false;
     if (this.finishSendCard ==1) {
       this.playingUI_node.active = true;//展示出牌按钮
-      //console.log('zijimopai');
       playerNode.runcount(15,15,function(){
       })
     }
@@ -425,11 +420,9 @@ cc.Class({
   },
   // 游戏结束
   gameEndNotify(PlayerData ) {
-    //console.log('jialeliangci5555?');
     var self = this;
     self.finishSendCard = 0;
     this.playingUI_node.active = false;
-    //console.log(PlayerData )
     ddzData.gameState = ddzConstants.gameState.WAITREADY
     self.outcardnode.getComponent('gameOutCardUI').resetData();
     //显示结算界面
@@ -468,7 +461,6 @@ cc.Class({
     var timeout = 1000
     setTimeout(function () {
       //var x = -417.6 
-      //console.log("sort x:" + x)
       for (let i = 0; i < this.cards_node.length; i++) {
         var card = this.cards_node[i];
         card.zIndex = i; //设置牌的叠加次序,zindex越大显示在上面
@@ -507,7 +499,6 @@ cc.Class({
       // card.parent = this.node.parent
       card.parent = this.cardsNode
       card.x = card.width * 0.4 * (-0.5) * (-6) + card.width * 0.4 * 0;
-      //console.log('xddddd', card.x );
       //这里实现为，每发一张牌，放在已经发的牌最后，然后整体移动
       card.y = -250
       card.active = false
@@ -531,7 +522,6 @@ cc.Class({
     card.x = last_card_x + ((0 + 1) * this.card_width * 0.4)
     card.y = -250  //先把底盘放在-230，在设置个定时器下移到-250的位置
 
-    ////console.log("pushThreeCard x:"+card.x)
     card.getComponent("card").showCards(carddata, myglobal.playerData.userId)
     card.active = true
     this.cards_node.push(card)
@@ -666,7 +656,6 @@ cc.Class({
   },
 
   playPushCardSound(card_name) {
-    //console.log("playPushCardSound:" + card_name)
     if (card_name == "") return
     switch (card_name) {
       case CardsValue.one.name:
@@ -706,7 +695,6 @@ cc.Class({
               //牌面上的数字加一
               playerNode.subtractCards(-1);
               //刷新桌面上的牌
-              //console.log('huitiaode paishuliang',cardNum);
               self.outcardnode.getComponent('gameOutCardUI').updateHandCardNum(cardNum);
             } else {
               //出牌失败，把选择的牌归位

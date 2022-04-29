@@ -17,7 +17,6 @@ cc.Class({
   onButtonCilck(event, customData) {
     switch (customData) {
       case "wx_login":
-        //console.log("wx_login request")
 
         //this.wait_node.active = true
 
@@ -31,11 +30,9 @@ cc.Class({
           //先隐藏等待UI
           //this.wait_node.active = false
           if (err != 0) {
-            //console.log("err:" + err)
             return
           }
 
-          //console.log("login sucess" + JSON.stringify(result))
           myglobal.playerData.gobal_count = result.goldcount
           cc.director.loadScene("hallScene")
         }.bind(this))
@@ -49,15 +46,11 @@ cc.Class({
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status < 400)) {
                 var response = xhr.responseText;
-                //console.log(response);
                 var responseJson = JSON.parse(response);
-                //console.log('ssss',responseJson.data)
                 useid = responseJson.data['id'];
-                //console.log('sdfsdf',responseJson.data['id']);
             }
         };
         xhr.onerror = function(evt){
-            //console.log(evt);
         }
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
